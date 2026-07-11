@@ -178,6 +178,13 @@ export default function HomePage() {
 
       {/* ─── HERO SECTION ─── */}
       <section className="relative min-h-screen flex items-center justify-center pt-16">
+        
+        {/* Background Image & Gradient Overlay */}
+        <div 
+          className="absolute inset-0 z-0 bg-cover bg-center bg-no-repeat opacity-100"
+          style={{ backgroundImage: 'url(/hero-bg.png)' }}
+        />
+        <div className="absolute inset-0 z-0 bg-gradient-to-b from-transparent via-cyber-dark/60 to-cyber-dark" />
         <HexGrid />
         <FloatingParticles />
 
@@ -198,14 +205,7 @@ export default function HomePage() {
         <GridLine direction="v" offset="85%" delay="3s" />
 
         <div className="relative z-10 max-w-5xl mx-auto px-6 text-center">
-          {/* Badge */}
-          <div className="inline-flex items-center gap-2 px-4 py-2 bg-cyber-card/60 backdrop-blur-sm border border-cyber-cyan/20 rounded-full mb-8">
-            <span className="relative flex h-2 w-2">
-              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-status-safe opacity-75" />
-              <span className="relative inline-flex rounded-full h-2 w-2 bg-status-safe" />
-            </span>
-            <span className="text-xs text-cyber-cyan font-semibold tracking-widest uppercase">AI-Powered Defence Active</span>
-          </div>
+
 
           {/* Main heading */}
           <h1 className="text-5xl md:text-7xl font-extrabold tracking-tight mb-6 leading-[1.1]">
@@ -239,19 +239,7 @@ export default function HomePage() {
             </a>
           </div>
 
-          {/* Mini threat cards */}
-          <div className="flex flex-wrap justify-center gap-3 max-w-3xl mx-auto">
-            {[
-              { icon: AlertTriangle, label: '3 Critical Threats', color: 'text-status-critical', bg: 'bg-status-critical/10 border-status-critical/20' },
-              { icon: Activity, label: '1,248 Assets Protected', color: 'text-cyber-cyan', bg: 'bg-cyber-blue/10 border-cyber-blue/20' },
-              { icon: Zap, label: '1.8m Avg Response', color: 'text-status-safe', bg: 'bg-status-safe/10 border-status-safe/20' },
-            ].map((item, i) => (
-              <div key={i} className={`flex items-center gap-2 px-4 py-2 rounded-lg border ${item.bg}`}>
-                <item.icon className={`w-4 h-4 ${item.color}`} />
-                <span className={`text-xs font-semibold ${item.color}`}>{item.label}</span>
-              </div>
-            ))}
-          </div>
+
         </div>
 
         {/* Bottom gradient fade */}
