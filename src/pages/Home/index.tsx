@@ -126,19 +126,49 @@ function StatCard({ value, suffix, label, icon: Icon }: any) {
 }
 
 /* ───────────── live threat feed ───────────── */
-const threats = [
-  { type: 'Critical', source: '103.14.xx.xx', attack: 'SQL Injection detected', target: 'DB-PROD-01', time: '2s ago' },
-  { type: 'High', source: '185.92.xx.xx', attack: 'Brute-force SSH attempt', target: 'SRV-GATEWAY', time: '8s ago' },
-  { type: 'Critical', source: '45.33.xx.xx', attack: 'Ransomware payload blocked', target: 'WS-FINANCE-07', time: '15s ago' },
-  { type: 'Medium', source: '91.240.xx.xx', attack: 'Suspicious DNS exfiltration', target: 'DNS-PRIMARY', time: '22s ago' },
-  { type: 'High', source: '62.76.xx.xx', attack: 'Lateral movement detected', target: 'AD-CONTROLLER', time: '31s ago' },
-];
+/* ───────────── live threat feed hook ───────────── */
+const ATTACK_VECTORS = ['SQL Injection', 'Ransomware Payload', 'DDoS Reflection', 'Cobalt Strike Beacon', 'Zero-Day Exploit', 'Privilege Escalation', 'Lateral Movement'];
+const TARGETS = ['DB-PROD-01', 'SRV-GATEWAY', 'WS-FINANCE', 'DNS-PRIMARY', 'AD-CONTROLLER', 'API-GATEWAY', 'K8S-CLUSTER'];
+const SEVERITIES = ['Critical', 'High', 'High', 'Medium']; // Weighted towards High/Critical
+
+function useLiveThreats(maxItems = 5) {
+  const [threats, setThreats] = useState<any[]>([]);
+
+  useEffect(() => {
+    // Initial seed
+    const initial = Array.from({ length: maxItems }).map(() => createRandomThreat());
+    setThreats(initial);
+
+    const interval = setInterval(() => {
+      setThreats(prev => {
+        const newThreat = createRandomThreat();
+        return [newThreat, ...prev].slice(0, maxItems);
+      });
+    }, 2500 + Math.random() * 2000); // Random interval between 2.5s and 4.5s
+
+    return () => clearInterval(interval);
+  }, [maxItems]);
+
+  return threats;
+}
+
+function createRandomThreat() {
+  const ip = `${Math.floor(Math.random() * 255)}.${Math.floor(Math.random() * 255)}.${Math.floor(Math.random() * 255)}.${Math.floor(Math.random() * 255)}`;
+  const vector = ATTACK_VECTORS[Math.floor(Math.random() * ATTACK_VECTORS.length)];
+  const target = TARGETS[Math.floor(Math.random() * TARGETS.length)];
+  const severity = SEVERITIES[Math.floor(Math.random() * SEVERITIES.length)];
+  const id = Math.random().toString(36).substring(7);
+  const time = new Date().toLocaleTimeString('en-US', { hour12: false, hour: 'numeric', minute: 'numeric', second: 'numeric' });
+  
+  return { id, type: severity, source: ip, attack: vector, target, time };
+}
 
 /* ═══════════════════════════════════════════════
    MAIN HOME PAGE
    ═══════════════════════════════════════════════ */
 export default function HomePage() {
   const [mousePos, setMousePos] = useState({ x: 0, y: 0 });
+  const liveThreats = useLiveThreats(5);
 
   useEffect(() => {
     const handler = (e: MouseEvent) => setMousePos({ x: e.clientX, y: e.clientY });
@@ -291,37 +321,58 @@ export default function HomePage() {
               <span className="ml-auto text-xs text-slate-500 font-mono">AUTO-REFRESH 5s</span>
             </div>
             {/* Table */}
-            <div className="overflow-x-auto">
-              <table className="w-full text-left text-sm">
-                <thead>
-                  <tr className="border-b border-slate-800/60 text-slate-500 text-xs uppercase tracking-wider">
-                    <th className="px-6 py-3 font-medium">Severity</th>
-                    <th className="px-6 py-3 font-medium">Source IP</th>
-                    <th className="px-6 py-3 font-medium">Attack Vector</th>
-                    <th className="px-6 py-3 font-medium">Target</th>
-                    <th className="px-6 py-3 font-medium text-right">Detected</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-slate-800/40">
-                  {threats.map((t, i) => (
-                    <tr key={i} className="hover:bg-slate-800/20 transition-colors group">
-                      <td className="px-6 py-4">
-                        <span className={`px-2.5 py-1 rounded-md text-xs font-bold uppercase tracking-wider ${
-                          t.type === 'Critical' ? 'bg-status-critical/10 text-status-critical border border-status-critical/20' :
-                          t.type === 'High' ? 'bg-status-high/10 text-status-high border border-status-high/20' :
-                          'bg-status-medium/10 text-status-medium border border-status-medium/20'
-                        }`}>
-                          {t.type}
-                        </span>
-                      </td>
-                      <td className="px-6 py-4 font-mono text-slate-300 text-xs">{t.source}</td>
-                      <td className="px-6 py-4 text-slate-200 font-medium">{t.attack}</td>
-                      <td className="px-6 py-4 text-slate-400 font-mono text-xs">{t.target}</td>
-                      <td className="px-6 py-4 text-right text-slate-500 text-xs">{t.time}</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
+            {/* Animated Feed */}
+            <div className="p-4 flex flex-col gap-3 min-h-[420px]">
+              {liveThreats.map((t, i) => (
+                <div 
+                  key={t.id} 
+                  className={`group relative overflow-hidden bg-cyber-dark border rounded-xl p-4 transition-all duration-500 ease-out flex flex-col md:flex-row md:items-center justify-between gap-4 shadow-lg
+                    ${t.type === 'Critical' ? 'border-status-critical/30 hover:border-status-critical/60 shadow-status-critical/5' :
+                      t.type === 'High' ? 'border-status-high/30 hover:border-status-high/60 shadow-status-high/5' :
+                      'border-status-medium/30 hover:border-status-medium/60 shadow-status-medium/5'}
+                  `}
+                  style={{
+                    animation: 'slideIn 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards',
+                  }}
+                >
+                  {/* Glowing background blob */}
+                  <div className={`absolute top-0 right-0 w-32 h-32 blur-3xl opacity-10 rounded-full pointer-events-none transition-opacity group-hover:opacity-20
+                    ${t.type === 'Critical' ? 'bg-status-critical' : t.type === 'High' ? 'bg-status-high' : 'bg-status-medium'}
+                  `} />
+
+                  <div className="flex items-center gap-4 z-10 w-full md:w-auto">
+                    <div className={`p-2 rounded-lg border ${
+                      t.type === 'Critical' ? 'bg-status-critical/10 border-status-critical/20 text-status-critical' :
+                      t.type === 'High' ? 'bg-status-high/10 border-status-high/20 text-status-high' :
+                      'bg-status-medium/10 border-status-medium/20 text-status-medium'
+                    }`}>
+                      <AlertTriangle className="w-5 h-5" />
+                    </div>
+                    <div>
+                      <h4 className="text-white font-bold text-sm md:text-base">{t.attack}</h4>
+                      <p className="text-slate-400 text-xs font-mono mt-1 flex items-center gap-2">
+                        <span className="text-slate-500">SRC:</span> {t.source}
+                        <span className="text-slate-600">|</span>
+                        <span className="text-slate-500">TGT:</span> {t.target}
+                      </p>
+                    </div>
+                  </div>
+
+                  <div className="flex items-center gap-6 z-10 w-full md:w-auto justify-between md:justify-end border-t md:border-t-0 border-slate-800/50 pt-3 md:pt-0">
+                    <span className={`px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider border ${
+                        t.type === 'Critical' ? 'bg-status-critical/10 text-status-critical border-status-critical/20 shadow-[0_0_10px_rgba(239,68,68,0.2)]' :
+                        t.type === 'High' ? 'bg-status-high/10 text-status-high border-status-high/20 shadow-[0_0_10px_rgba(249,115,22,0.2)]' :
+                        'bg-status-medium/10 text-status-medium border-status-medium/20'
+                      }`}>
+                        {t.type} Risk
+                    </span>
+                    <span className="text-slate-500 font-mono text-xs flex items-center gap-1">
+                      <Zap className="w-3 h-3 text-cyber-cyan" />
+                      {t.time}
+                    </span>
+                  </div>
+                </div>
+              ))}
             </div>
           </div>
         </div>
@@ -436,6 +487,10 @@ export default function HomePage() {
         @keyframes pulse-glow {
           0%, 100% { opacity: 0.1; }
           50% { opacity: 0.35; }
+        }
+        @keyframes slideIn {
+          from { opacity: 0; transform: translateY(-20px) scale(0.98); }
+          to { opacity: 1; transform: translateY(0) scale(1); }
         }
       `}</style>
     </div>
