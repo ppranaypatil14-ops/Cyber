@@ -15,14 +15,14 @@ import {
 import { cn } from "../../utils/cn";
 
 const navItems = [
-  { name: "Overview Dashboard", path: "/", icon: LayoutDashboard },
-  { name: "Live Alerts", path: "/alerts", icon: Activity },
-  { name: "Security Testing Lab", path: "/lab", icon: FlaskConical },
-  { name: "Attack Investigation", path: "/investigation", icon: SearchCode },
-  { name: "MITRE ATT&CK", path: "/mitre", icon: Network },
-  { name: "AI Security Copilot", path: "/copilot", icon: Bot },
-  { name: "Incident Reports", path: "/reports", icon: FileText },
-  { name: "Settings", path: "/settings", icon: Settings },
+  { name: "Overview Dashboard", path: "/dashboard", icon: LayoutDashboard },
+  { name: "Live Alerts", path: "/dashboard/alerts", icon: Activity },
+  { name: "Security Testing Lab", path: "/dashboard/lab", icon: FlaskConical },
+  { name: "Attack Investigation", path: "/dashboard/investigation", icon: SearchCode },
+  { name: "MITRE ATT&CK", path: "/dashboard/mitre", icon: Network },
+  { name: "AI Security Copilot", path: "/dashboard/copilot", icon: Bot },
+  { name: "Incident Reports", path: "/dashboard/reports", icon: FileText },
+  { name: "Settings", path: "/dashboard/settings", icon: Settings },
 ];
 
 export function Sidebar() {
@@ -45,6 +45,7 @@ export function Sidebar() {
           <NavLink
             key={item.path}
             to={item.path}
+            end={item.path === '/dashboard'}
             className={({ isActive }) => cn(
               "flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all duration-200",
               isActive 

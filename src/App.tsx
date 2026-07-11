@@ -1,5 +1,6 @@
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import { AppLayout } from "./components/layout/AppLayout";
+import HomePage from "./pages/Home";
 import OverviewDashboard from "./pages/Overview";
 import LiveAlerts from "./pages/Alerts";
 import SecurityTestingLab from "./pages/TestingLab";
@@ -13,7 +14,11 @@ function App() {
   return (
     <Router>
       <Routes>
-        <Route path="/" element={<AppLayout />}>
+        {/* Public Homepage — no sidebar/topnav */}
+        <Route path="/" element={<HomePage />} />
+
+        {/* Dashboard — wrapped with sidebar + topnav layout */}
+        <Route path="/dashboard" element={<AppLayout />}>
           <Route index element={<OverviewDashboard />} />
           <Route path="alerts" element={<LiveAlerts />} />
           <Route path="lab" element={<SecurityTestingLab />} />
