@@ -8,11 +8,11 @@ export default {
     extend: {
       colors: {
         cyber: {
-          dark: '#0a0f1d',
-          darker: '#060913',
-          card: '#131b2f',
-          blue: '#1e3a8a',
-          cyan: '#06b6d4',
+          dark: '#f8fafc',
+          darker: '#e0f2fe',
+          card: '#eff6ff',
+          blue: '#2563eb',
+          cyan: '#0ea5e9',
           accent: '#3b82f6'
         },
         status: {
@@ -23,7 +23,7 @@ export default {
         }
       },
       fontFamily: {
-        sans: ['Inter', 'sans-serif'],
+        sans: ['Plus Jakarta Sans', 'sans-serif'],
       }
     },
   },

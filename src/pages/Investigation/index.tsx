@@ -1,4 +1,4 @@
-import { ShieldAlert, Activity, Clock, CheckCircle2, AlertTriangle, FileText, Monitor, ChevronRight } from 'lucide-react';
+import { Activity, Clock, AlertTriangle, FileText, Monitor, ChevronRight } from 'lucide-react';
 import { cn } from '../../utils/cn';
 
 const timeline = [

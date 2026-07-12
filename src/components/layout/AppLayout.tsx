@@ -4,7 +4,7 @@ import { TopNav } from "./TopNav";
 
 export function AppLayout() {
   return (
-    <div className="min-h-screen bg-cyber-dark text-white flex">
+    <div className="min-h-screen bg-cyber-dark text-slate-900 flex">
       <Sidebar />
       <div className="flex-1 ml-64 flex flex-col min-w-0">
         <TopNav />

@@ -1,4 +1,4 @@
-import { ShieldAlert, Crosshair, Network, ArrowRight, ShieldCheck, Database, Key, Activity } from 'lucide-react';
+import { Crosshair, Network, Database, Key, Activity, ShieldAlert } from 'lucide-react';
 import { cn } from '../../utils/cn';
 
 const attackStages = [
@@ -64,7 +64,7 @@ export default function MitreAttack() {
               <div className="h-full bg-gradient-to-r from-status-critical via-status-high to-transparent w-1/2"></div>
             </div>
 
-            {attackStages.map((stage, idx) => (
+            {attackStages.map((stage) => (
               <div key={stage.id} className="relative z-10 flex flex-col items-center w-40">
                 <div className={cn(
                   "w-16 h-16 rounded-full border-2 flex items-center justify-center bg-cyber-darker mb-4 transition-all duration-300",

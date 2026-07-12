@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from 'react';
-import { Bot, User, Send, ShieldAlert, Sparkles, ChevronRight } from 'lucide-react';
+import { Bot, User, Send, Sparkles } from 'lucide-react';
 import { cn } from '../../utils/cn';
 
 const suggestions = [

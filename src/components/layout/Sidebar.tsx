@@ -27,15 +27,15 @@ const navItems = [
 
 export function Sidebar() {
   return (
-    <div className="w-64 h-screen bg-cyber-darker border-r border-cyber-card flex flex-col fixed left-0 top-0">
+    <div className="w-64 h-screen bg-white border-r border-slate-200 flex flex-col fixed left-0 top-0 shadow-sm">
       {/* Logo */}
       <div className="p-6 flex items-center gap-3">
-        <div className="p-2 bg-cyber-blue/20 rounded-lg">
-          <ShieldAlert className="w-8 h-8 text-cyber-cyan" />
+        <div className="p-2 bg-cyber-blue/10 rounded-lg">
+          <ShieldAlert className="w-8 h-8 text-cyber-blue" />
         </div>
         <div>
-          <h1 className="font-bold text-xl text-white tracking-tight">CyberShield <span className="text-cyber-cyan">AI</span></h1>
-          <p className="text-xs text-slate-400">Detect. Predict. Defend.</p>
+          <h1 className="font-bold text-xl text-slate-900 tracking-tight">CyberShield <span className="text-cyber-blue">AI</span></h1>
+          <p className="text-xs text-slate-500">Detect. Predict. Defend.</p>
         </div>
       </div>
 
@@ -49,8 +49,8 @@ export function Sidebar() {
             className={({ isActive }) => cn(
               "flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all duration-200",
               isActive 
-                ? "bg-cyber-blue/10 text-cyber-cyan border border-cyber-blue/30" 
-                : "text-slate-400 hover:text-white hover:bg-cyber-card"
+                ? "bg-cyber-blue/10 text-cyber-blue border border-cyber-blue/30" 
+                : "text-slate-600 hover:text-slate-900 hover:bg-cyber-card"
             )}
           >
             <item.icon className="w-5 h-5" />
@@ -60,7 +60,7 @@ export function Sidebar() {
       </nav>
 
       {/* Bottom Section */}
-      <div className="p-4 border-t border-cyber-card space-y-4">
+      <div className="p-4 border-t border-slate-200 space-y-4 bg-white">
         {/* System Status */}
         <div className="flex items-center gap-2 px-2 py-1.5 bg-status-safe/10 rounded-md border border-status-safe/20">
           <CheckCircle2 className="w-4 h-4 text-status-safe" />
@@ -69,9 +69,9 @@ export function Sidebar() {
         
         {/* User Profile */}
         <div className="flex items-center gap-3 px-2">
-          <UserCircle className="w-8 h-8 text-slate-400" />
+          <UserCircle className="w-8 h-8 text-slate-600" />
           <div className="flex flex-col">
-            <span className="text-sm font-medium text-white">Security Administrator</span>
+            <span className="text-sm font-medium text-slate-900">Security Administrator</span>
             <span className="text-xs text-slate-500">SOC Team</span>
           </div>
         </div>

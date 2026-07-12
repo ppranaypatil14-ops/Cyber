@@ -1,4 +1,4 @@
-import { FileText, Download, FileJson, File, CheckCircle2, ShieldAlert, Clock, AlertTriangle } from 'lucide-react';
+import { FileText, Download, FileJson, File, ShieldAlert, CheckCircle2, Clock } from 'lucide-react';
 import { cn } from '../../utils/cn';
 
 const mockReports = [
