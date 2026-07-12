@@ -71,6 +71,7 @@ def analyze_activity(activity: Activity):
     # 3. Run prediction using the real Isolation Forest model
     try:
         prediction_val = model.predict(input_data)[0]
+        raw_score = model.decision_function(input_data)[0]
     except Exception as e:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
@@ -79,16 +80,33 @@ def analyze_activity(activity: Activity):
         
     is_anomaly = bool(prediction_val == -1)
     classification = "Anomaly" if is_anomaly else "Normal"
+    
+    # Map raw_score (typically -0.3 to 0.3) to 0-100 (100 = highly anomalous)
+    # raw_score < 0 is anomaly. raw_score > 0 is normal.
+    ml_anomaly_score = int(max(0, min(100, 50 - (raw_score * 200))))
+    
+    if ml_anomaly_score <= 29:
+        behaviour_difference = "Low"
+    elif ml_anomaly_score <= 59:
+        behaviour_difference = "Moderate"
+    elif ml_anomaly_score <= 79:
+        behaviour_difference = "High"
+    else:
+        behaviour_difference = "Very High"
 
     # 4. Calculate Risk
-    risk_data = calculate_risk(activity)
+    risk_data = calculate_risk(activity, ml_anomaly_score)
 
     # 5. Return the combined response
     return {
         "is_anomaly": is_anomaly,
         "classification": classification,
-        "model": "Isolation Forest",
-        "risk_score": risk_data["risk_score"],
+        "ml_anomaly_score": ml_anomaly_score,
+        "cybersecurity_risk_score": risk_data["cybersecurity_risk_score"],
+        "final_risk_score": risk_data["final_risk_score"],
         "severity": risk_data["severity"],
+        "model": "Isolation Forest",
+        "training_records": 3000,
+        "behaviour_difference": behaviour_difference,
         "reasons": risk_data["reasons"]
     }
