@@ -179,7 +179,7 @@ export default function HomePage() {
     <div className="min-h-screen bg-[#03120d] text-slate-100 overflow-x-hidden">
 
       {/* ─── NAVIGATION ─── */}
-      <nav className="fixed top-0 left-0 right-0 z-50 bg-[#02100c]/95 backdrop-blur-xl border-b border-slate-900/30 shadow-sm">
+      <nav className="fixed top-0 left-0 right-0 z-50 backdrop-blur-xl border-b border-slate-900/30 shadow-sm" style={{ background: 'rgba(8,15,20,0.75)' }}>
         <div className="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
           <div className="flex items-center gap-3">
             <div className="p-2 bg-emerald-500/10 rounded-lg">
