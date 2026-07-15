@@ -9,6 +9,8 @@ import MitreAttack from "./pages/MitreAttack";
 import Copilot from "./pages/Copilot";
 import Reports from "./pages/Reports";
 import Settings from "./pages/Settings";
+import Login from "./pages/Login";
+import Profile from "./pages/Profile";
 
 function App() {
   return (
@@ -16,6 +18,9 @@ function App() {
       <Routes>
         {/* Public Homepage — no sidebar/topnav */}
         <Route path="/" element={<HomePage />} />
+        
+        {/* Authentication */}
+        <Route path="/login" element={<Login />} />
 
         {/* Dashboard — wrapped with sidebar + topnav layout */}
         <Route path="/dashboard" element={<AppLayout />}>
@@ -23,6 +28,7 @@ function App() {
           <Route path="alerts" element={<LiveAlerts />} />
           <Route path="lab" element={<SecurityTestingLab />} />
           <Route path="investigation" element={<AttackInvestigation />} />
+          <Route path="profile" element={<Profile />} />
           <Route path="mitre" element={<MitreAttack />} />
           <Route path="copilot" element={<Copilot />} />
           <Route path="reports" element={<Reports />} />

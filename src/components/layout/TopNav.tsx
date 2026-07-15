@@ -1,4 +1,5 @@
 import { Bell, Search, AlertTriangle, ShieldCheck } from "lucide-react";
+import { Link } from "react-router-dom";
 
 export function TopNav() {
   return (
@@ -43,11 +44,11 @@ export function TopNav() {
         </button>
 
         {/* Admin Profile */}
-        <button className="w-8 h-8 rounded-full bg-gradient-to-tr from-cyber-blue to-cyber-cyan p-0.5 shadow-lg shadow-cyber-cyan/20">
-          <div className="w-full h-full bg-cyber-darker rounded-full flex items-center justify-center">
-            <ShieldCheck className="w-4 h-4 text-cyber-cyan" />
+        <Link to="/dashboard/profile" className="w-8 h-8 rounded-full bg-gradient-to-tr from-cyber-blue to-cyber-cyan p-0.5 shadow-lg shadow-cyber-cyan/20 block hover:scale-105 transition-transform">
+          <div className="w-full h-full bg-slate-50 rounded-full flex items-center justify-center">
+            <span className="text-sm font-bold text-cyber-blue">B</span>
           </div>
-        </button>
+        </Link>
 
       </div>
     </header>

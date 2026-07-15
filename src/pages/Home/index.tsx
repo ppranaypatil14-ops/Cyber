@@ -167,6 +167,7 @@ function createRandomThreat() {
 export default function HomePage() {
   const [mousePos, setMousePos] = useState({ x: 0, y: 0 });
   const liveThreats = useLiveThreats(5);
+  const isAuthenticated = localStorage.getItem('isAuthenticated') === 'true';
 
   useEffect(() => {
     const handler = (e: MouseEvent) => setMousePos({ x: e.clientX, y: e.clientY });
@@ -194,13 +195,29 @@ export default function HomePage() {
             <a href="#stats" className="text-sm text-slate-300 hover:text-white transition-colors">Statistics</a>
             <a href="#capabilities" className="text-sm text-slate-300 hover:text-white transition-colors">Capabilities</a>
           </div>
-          <Link
-            to="/dashboard"
-            className="px-5 py-2 bg-gradient-to-r from-emerald-400 to-lime-300 hover:from-lime-300 hover:to-emerald-400 text-slate-950 text-sm font-semibold rounded-lg transition-all duration-300 hover:shadow-lg hover:shadow-emerald-400/20 flex items-center gap-2"
-          >
-            Go to Dashboard
-            <ArrowRight className="w-4 h-4" />
-          </Link>
+          <div className="flex items-center gap-4">
+            {isAuthenticated ? (
+              <Link to="/dashboard/profile" className="w-8 h-8 rounded-full bg-gradient-to-tr from-cyber-blue to-cyber-cyan p-0.5 shadow-lg shadow-cyber-cyan/20 block hover:scale-105 transition-transform">
+                <div className="w-full h-full bg-slate-50 rounded-full flex items-center justify-center">
+                  <span className="text-sm font-bold text-cyber-blue">B</span>
+                </div>
+              </Link>
+            ) : (
+              <Link
+                to="/login"
+                className="hidden sm:block text-sm text-slate-300 hover:text-white font-semibold transition-colors"
+              >
+                Log in
+              </Link>
+            )}
+            <Link
+              to="/dashboard"
+              className="px-5 py-2 bg-gradient-to-r from-emerald-400 to-lime-300 hover:from-lime-300 hover:to-emerald-400 text-slate-950 text-sm font-semibold rounded-lg transition-all duration-300 hover:shadow-lg hover:shadow-emerald-400/20 flex items-center gap-2"
+            >
+              Go to Dashboard
+              <ArrowRight className="w-4 h-4" />
+            </Link>
+          </div>
         </div>
       </nav>
 
