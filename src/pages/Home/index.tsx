@@ -226,8 +226,8 @@ export default function HomePage() {
         
         {/* Background Image & Gradient Overlay */}
         <div 
-          className="absolute inset-0 z-0 bg-no-repeat bg-center bg-cover opacity-100"
-          style={{ backgroundImage: 'url(/hero-bg.png)' }}
+          className="absolute inset-0 z-0 bg-no-repeat bg-cover opacity-100"
+          style={{ backgroundImage: 'url(/hero-bg.png)', backgroundPosition: 'center 30%' }}
         />
         <div className="absolute inset-0 z-0 bg-gradient-to-b from-[#02100c]/10 via-[#02100c]/70 to-[#02100c]" />
         <HexGrid />
@@ -288,7 +288,7 @@ export default function HomePage() {
         </div>
 
         {/* Bottom gradient fade */}
-        <div className="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-cyber-dark to-transparent" />
+        <div className="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-[#02100c] to-transparent" />
       </section>
 
       {/* ─── FEATURES SECTION ─── */}
