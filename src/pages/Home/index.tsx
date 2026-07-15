@@ -94,15 +94,15 @@ function GridLine({ direction, offset, delay }: { direction: 'h' | 'v'; offset: 
 function FeatureCard({ icon: Icon, title, desc, gradient, delay }: any) {
   return (
     <div
-      className="group relative bg-white border border-slate-300 rounded-2xl p-7 hover:border-cyber-blue/30 transition-all duration-500 hover:-translate-y-1 hover:shadow-xl hover:shadow-cyber-blue/10"
+      className="group relative bg-[#0f3b2c] border border-emerald-500/20 rounded-2xl p-7 hover:border-emerald-300 transition-all duration-500 hover:-translate-y-1 hover:shadow-2xl hover:shadow-emerald-400/20"
       style={{ animationDelay: delay }}
     >
       <div className="absolute inset-0 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-500 -z-10" style={{ background: gradient }} />
-      <div className="w-12 h-12 rounded-xl bg-cyber-blue/10 border border-cyber-blue/20 flex items-center justify-center mb-5 group-hover:scale-110 transition-transform duration-300">
-        <Icon className="w-6 h-6 text-cyber-blue" />
+      <div className="w-12 h-12 rounded-xl bg-emerald-500/20 border border-emerald-400/30 flex items-center justify-center mb-5 group-hover:scale-110 transition-transform duration-300">
+        <Icon className="w-6 h-6 text-emerald-100" />
       </div>
-      <h3 className="text-lg font-semibold text-slate-900 mb-2">{title}</h3>
-      <p className="text-sm text-slate-700 leading-relaxed font-medium">{desc}</p>
+      <h3 className="text-xl md:text-2xl font-extrabold mb-3" style={{ color: '#e6fff8', textShadow: '0 2px 18px rgba(0,0,0,0.65)' }}>{title}</h3>
+      <p className="text-sm text-slate-200 leading-relaxed font-medium">{desc}</p>
     </div>
   );
 }
@@ -175,28 +175,28 @@ export default function HomePage() {
   }, []);
 
   return (
-    <div className="min-h-screen bg-cyber-dark text-slate-900 overflow-x-hidden">
+    <div className="min-h-screen bg-[#03120d] text-slate-100 overflow-x-hidden">
 
       {/* ─── NAVIGATION ─── */}
-      <nav className="fixed top-0 left-0 right-0 z-50 bg-white/90 backdrop-blur-xl border-b border-slate-200/80 shadow-sm">
+      <nav className="fixed top-0 left-0 right-0 z-50 bg-[#02100c]/95 backdrop-blur-xl border-b border-slate-900/30 shadow-sm">
         <div className="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <div className="p-2 bg-cyber-blue/10 rounded-lg">
-              <ShieldAlert className="w-6 h-6 text-cyber-blue" />
+            <div className="p-2 bg-emerald-500/10 rounded-lg">
+              <ShieldAlert className="w-6 h-6 text-emerald-300" />
             </div>
             <div>
-              <span className="font-bold text-lg text-slate-900 tracking-tight">CyberShield <span className="text-cyber-blue">AI</span></span>
+              <span className="font-bold text-lg text-white tracking-tight">CyberShield <span className="text-emerald-300">AI</span></span>
             </div>
           </div>
           <div className="hidden md:flex items-center gap-8">
-            <a href="#features" className="text-sm text-slate-500 hover:text-slate-900 transition-colors">Features</a>
-            <a href="#threats" className="text-sm text-slate-500 hover:text-slate-900 transition-colors">Live Threats</a>
-            <a href="#stats" className="text-sm text-slate-500 hover:text-slate-900 transition-colors">Statistics</a>
-            <a href="#capabilities" className="text-sm text-slate-500 hover:text-slate-900 transition-colors">Capabilities</a>
+            <a href="#features" className="text-sm text-slate-300 hover:text-white transition-colors">Features</a>
+            <a href="#threats" className="text-sm text-slate-300 hover:text-white transition-colors">Live Threats</a>
+            <a href="#stats" className="text-sm text-slate-300 hover:text-white transition-colors">Statistics</a>
+            <a href="#capabilities" className="text-sm text-slate-300 hover:text-white transition-colors">Capabilities</a>
           </div>
           <Link
             to="/dashboard"
-            className="px-5 py-2 bg-gradient-to-r from-cyber-blue to-blue-600 hover:from-blue-600 hover:to-cyber-cyan text-white text-sm font-semibold rounded-lg transition-all duration-300 hover:shadow-lg hover:shadow-cyber-blue/20 flex items-center gap-2"
+            className="px-5 py-2 bg-gradient-to-r from-emerald-400 to-lime-300 hover:from-lime-300 hover:to-emerald-400 text-slate-950 text-sm font-semibold rounded-lg transition-all duration-300 hover:shadow-lg hover:shadow-emerald-400/20 flex items-center gap-2"
           >
             Go to Dashboard
             <ArrowRight className="w-4 h-4" />
@@ -205,14 +205,14 @@ export default function HomePage() {
       </nav>
 
       {/* ─── HERO SECTION ─── */}
-      <section className="relative min-h-screen flex items-center justify-center pt-16">
+      <section className="relative min-h-screen flex items-center justify-center pt-16 bg-[#02100c] text-white overflow-hidden">
         
         {/* Background Image & Gradient Overlay */}
         <div 
-          className="absolute inset-0 z-0 bg-cover bg-center bg-no-repeat opacity-100"
+          className="absolute inset-0 z-0 bg-no-repeat bg-center bg-cover opacity-100"
           style={{ backgroundImage: 'url(/hero-bg.png)' }}
         />
-        <div className="absolute inset-0 z-0 bg-gradient-to-b from-transparent via-cyber-dark/60 to-cyber-dark" />
+        <div className="absolute inset-0 z-0 bg-gradient-to-b from-[#02100c]/10 via-[#02100c]/70 to-[#02100c]" />
         <HexGrid />
         <FloatingParticles />
 
@@ -236,15 +236,15 @@ export default function HomePage() {
 
 
           {/* Main heading */}
-          <h1 className="text-5xl md:text-7xl font-extrabold tracking-tight mb-6 leading-[1.1]">
-            <span className="bg-gradient-to-r from-white via-slate-200 to-slate-400 bg-clip-text text-transparent">Next-Gen</span>
+          <h1 className="text-5xl md:text-[5.5rem] lg:text-[6.2rem] font-black tracking-tight mb-6 leading-[1.02]">
+            <span className="text-emerald-200">Next-Gen</span>
             <br />
-            <span className="bg-gradient-to-r from-cyber-cyan via-blue-400 to-purple-400 bg-clip-text text-transparent">Cyber Security</span>
+            <span className="text-emerald-300">Cyber Security</span>
             <br />
-            <span className="bg-gradient-to-r from-white via-slate-200 to-slate-400 bg-clip-text text-transparent">Operations Centre</span>
+            <span className="text-slate-100">Operations Centre</span>
           </h1>
 
-          <p className="text-lg md:text-xl text-slate-400 max-w-2xl mx-auto mb-10 leading-relaxed">
+          <p className="text-lg md:text-xl text-slate-300 max-w-2xl mx-auto mb-10 leading-relaxed">
             Real-time threat detection, AI-driven investigation, and autonomous response — all unified in a single, intelligent security platform.
           </p>
 
@@ -252,7 +252,7 @@ export default function HomePage() {
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-16">
             <Link
               to="/dashboard"
-              className="group px-8 py-3.5 bg-gradient-to-r from-cyber-cyan to-blue-500 hover:from-blue-500 hover:to-purple-500 text-white font-bold rounded-xl transition-all duration-300 hover:shadow-2xl hover:shadow-cyber-cyan/30 hover:-translate-y-0.5 flex items-center gap-2"
+              className="group px-8 py-3.5 bg-gradient-to-r from-emerald-400 to-lime-300 hover:from-lime-300 hover:to-emerald-400 text-slate-950 font-black rounded-xl transition-all duration-300 hover:shadow-2xl hover:shadow-emerald-400/30 hover:-translate-y-0.5 flex items-center gap-2"
             >
               <ShieldCheck className="w-5 h-5" />
               Launch Dashboard
@@ -260,7 +260,7 @@ export default function HomePage() {
             </Link>
             <a
               href="#features"
-              className="px-8 py-3.5 bg-white border border-slate-200 hover:border-cyber-blue/40 text-slate-700 hover:text-slate-900 font-semibold rounded-xl transition-all duration-300 flex items-center gap-2 shadow-sm"
+              className="px-8 py-3.5 bg-slate-900/90 border border-slate-700 hover:border-emerald-400 text-slate-100 hover:text-white font-semibold rounded-xl transition-all duration-300 flex items-center gap-2 shadow-lg shadow-emerald-400/10"
             >
               <Eye className="w-5 h-5 text-cyber-blue" />
               Explore Features
@@ -275,16 +275,15 @@ export default function HomePage() {
       </section>
 
       {/* ─── FEATURES SECTION ─── */}
-      <section id="features" className="relative py-28 px-6">
+      <section id="features" className="relative py-28 px-6 bg-[#031d16]">
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-16">
-            <span className="text-xs font-bold text-cyber-blue tracking-[0.3em] uppercase mb-3 block">Core Capabilities</span>
-            <h2 className="text-4xl md:text-5xl font-extrabold tracking-tight mb-4 text-slate-900">
-              Intelligent Security
-              <br />
-              <span className="text-cyber-blue">At Every Layer</span>
+            <span className="text-xs font-bold text-cyan-200 tracking-[0.3em] uppercase mb-3 block">Core Capabilities</span>
+            <h2 className="text-5xl md:text-[4.8rem] font-black tracking-tight mb-4 leading-[1.05]" style={{ color: '#7dd3fc', textShadow: '0 0 36px rgba(125,211,252,0.35)' }}>
+              <span className="block text-cyan-200">Intelligent Security</span>
+              <span className="block text-cyan-100 mt-6">At Every Layer</span>
             </h2>
-            <p className="text-slate-600 max-w-xl mx-auto">Comprehensive protection powered by advanced AI, real-time analytics, and automated threat response.</p>
+            <p className="text-slate-300 max-w-xl mx-auto">Comprehensive protection powered by advanced AI, real-time analytics, and automated threat response.</p>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             <FeatureCard icon={Radar} title="Real-Time Threat Detection" desc="AI continuously monitors network traffic, endpoints, and user behaviour to identify anomalies and zero-day threats in milliseconds." gradient="linear-gradient(135deg, rgba(6,182,212,0.08) 0%, transparent 100%)" delay="0ms" />
@@ -298,13 +297,17 @@ export default function HomePage() {
       </section>
 
       {/* ─── ATTACK SURFACE SECTION ─── */}
-      <section id="threats" className="relative py-24 px-6 bg-slate-50">
+      <section id="threats" className="relative py-24 px-6 bg-[#02120d]">
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-12">
-            <h2 className="text-4xl md:text-5xl font-extrabold tracking-tight mb-4 text-slate-900">Defense Across Every Attack Surface</h2>
-            <p className="text-slate-600 max-w-2xl mx-auto">A single, unified platform to secure devices, users, apps, and data – end to end.</p>
+            <h2 className="text-5xl md:text-[4.8rem] font-black tracking-tight mb-4"
+              style={{ color: '#7dd3fc', textShadow: '0 0 36px rgba(125,211,252,0.35)' }}
+            >
+              Defense Across Every Attack Surface
+            </h2>
+            <p className="text-slate-300 max-w-2xl mx-auto">A single, unified platform to secure devices, users, apps, and data – end to end.</p>
           </div>
-          <div className="rounded-[32px] overflow-hidden border border-slate-200 shadow-xl bg-white">
+          <div className="rounded-[32px] overflow-hidden border border-slate-800 shadow-xl bg-[#081f17]">
             <img
               src="/attack-surface.png"
               alt="Defense across every attack surface diagram"
@@ -315,10 +318,10 @@ export default function HomePage() {
       </section>
 
       {/* ─── STATS SECTION ─── */}
-      <section id="stats" className="relative py-20 px-6">
+      <section id="stats" className="relative py-20 px-6 bg-[#02120d]">
         <div className="max-w-5xl mx-auto">
-          <div className="bg-white border border-slate-200 rounded-2xl p-8 shadow-sm">
-            <div className="grid grid-cols-2 md:grid-cols-4 divide-x divide-slate-200">
+          <div className="bg-[#081f17] border border-slate-800 rounded-2xl p-8 shadow-sm">
+            <div className="grid grid-cols-2 md:grid-cols-4 divide-x divide-slate-800">
               <StatCard value={99} suffix=".97%" label="Uptime SLA" icon={Server} />
               <StatCard value={2847} suffix="" label="Threats Blocked Today" icon={ShieldAlert} />
               <StatCard value={1248} suffix="" label="Assets Monitored" icon={Globe} />
@@ -329,79 +332,81 @@ export default function HomePage() {
       </section>
 
       {/* ─── OPERATIONAL INSIGHTS SECTION ─── */}
-      <section id="operational-insights" className="relative py-24 px-6 bg-slate-50">
+      <section id="operational-insights" className="relative py-24 px-6 bg-[#031d16]">
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-16">
-            <span className="text-xs font-bold text-cyber-blue tracking-[0.3em] uppercase mb-3 block">Operational insights</span>
-            <h2 className="text-4xl md:text-5xl font-extrabold tracking-tight mb-4 text-slate-900">What the platform helps you do</h2>
-            <p className="text-slate-600 max-w-xl mx-auto">Turn data into action with clear security metrics, faster incident response, and better visibility across your attack surface.</p>
+            <span className="text-xs font-bold text-cyan-200 tracking-[0.3em] uppercase mb-3 block">Operational insights</span>
+            <h2 className="text-5xl md:text-[4.8rem] font-black tracking-tight mb-4 text-cyan-200"
+              style={{ textShadow: '0 0 30px rgba(111,211,255,0.35)' }}
+            >What the platform helps you do</h2>
+            <p className="text-slate-200 max-w-xl mx-auto">Turn data into action with clear security metrics, faster incident response, and better visibility across your attack surface.</p>
           </div>
 
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-            <div className="rounded-3xl border border-slate-200 bg-white p-8 shadow-sm hover:shadow-lg transition-shadow duration-300">
-              <div className="inline-flex items-center justify-center rounded-2xl bg-cyber-blue/10 text-cyber-blue w-12 h-12 mb-5">
-                <ShieldCheck className="w-6 h-6" />
-              </div>
-              <h3 className="text-2xl font-semibold text-slate-900 mb-3">Incident Prioritization</h3>
-              <p className="text-slate-600 leading-relaxed">Automatically rank alerts and focus your team on the threats that matter most, reducing noise and speeding up response time.</p>
+            <div className="rounded-3xl border border-emerald-500/10 bg-[#081f17] p-8 shadow-sm hover:shadow-lg transition-shadow duration-300">
+                <div className="inline-flex items-center justify-center rounded-2xl bg-emerald-500/15 text-emerald-100 w-12 h-12 mb-5">
+                  <ShieldCheck className="w-6 h-6 text-emerald-100" />
+                </div>
+                <h3 className="text-2xl font-bold mb-3" style={{ color: '#e6fff8', textShadow: '0 2px 18px rgba(0,0,0,0.6)' }}>Incident Prioritization</h3>
+              <p className="text-slate-300 leading-relaxed">Automatically rank alerts and focus your team on the threats that matter most, reducing noise and speeding up response time.</p>
             </div>
 
-            <div className="rounded-3xl border border-slate-200 bg-white p-8 shadow-sm hover:shadow-lg transition-shadow duration-300">
-              <div className="inline-flex items-center justify-center rounded-2xl bg-cyber-cyan/10 text-cyber-cyan w-12 h-12 mb-5">
-                <Radar className="w-6 h-6" />
+            <div className="rounded-3xl border border-emerald-500/10 bg-[#081f17] p-8 shadow-sm hover:shadow-lg transition-shadow duration-300">
+              <div className="inline-flex items-center justify-center rounded-2xl bg-emerald-500/15 text-emerald-100 w-12 h-12 mb-5">
+                <Radar className="w-6 h-6 text-emerald-100" />
               </div>
-              <h3 className="text-2xl font-semibold text-slate-900 mb-3">Threat Intelligence</h3>
-              <p className="text-slate-600 leading-relaxed">Get concise, actionable alerts from the latest threat feeds, mapped to MITRE and cross-correlated with your environment.</p>
+              <h3 className="text-2xl font-bold mb-3" style={{ color: '#e6fff8', textShadow: '0 2px 18px rgba(0,0,0,0.6)' }}>Threat Intelligence</h3>
+              <p className="text-slate-300 leading-relaxed">Get concise, actionable alerts from the latest threat feeds, mapped to MITRE and cross-correlated with your environment.</p>
             </div>
 
-            <div className="rounded-3xl border border-slate-200 bg-white p-8 shadow-sm hover:shadow-lg transition-shadow duration-300">
-              <div className="inline-flex items-center justify-center rounded-2xl bg-blue-500/10 text-blue-500 w-12 h-12 mb-5">
-                <Globe className="w-6 h-6" />
+            <div className="rounded-3xl border border-emerald-500/10 bg-[#081f17] p-8 shadow-sm hover:shadow-lg transition-shadow duration-300">
+              <div className="inline-flex items-center justify-center rounded-2xl bg-emerald-500/15 text-emerald-100 w-12 h-12 mb-5">
+                <Globe className="w-6 h-6 text-emerald-100" />
               </div>
-              <h3 className="text-2xl font-semibold text-slate-900 mb-3">Visibility & Reporting</h3>
-              <p className="text-slate-600 leading-relaxed">Monitor asset health, user activity, and system risk with clean dashboards and summary reports for security teams.</p>
+              <h3 className="text-2xl font-bold mb-3" style={{ color: '#e6fff8', textShadow: '0 2px 18px rgba(0,0,0,0.6)' }}>Visibility & Reporting</h3>
+              <p className="text-slate-300 leading-relaxed">Monitor asset health, user activity, and system risk with clean dashboards and summary reports for security teams.</p>
             </div>
           </div>
 
           <div className="mt-16 grid grid-cols-1 md:grid-cols-3 gap-4">
             <div className="rounded-3xl bg-gradient-to-r from-cyber-blue to-cyber-cyan px-6 py-8 text-white shadow-xl">
-              <p className="text-sm uppercase tracking-[0.2em] text-cyber-cyan/70 mb-4">Security score</p>
-              <p className="text-5xl font-bold">87</p>
-              <p className="mt-3 text-sm text-slate-100">Based on network, endpoint, and identity risk.</p>
+            <span className="text-sm uppercase tracking-[0.2em] text-emerald-200 mb-4">Security score</span>
+              <p className="text-5xl font-bold text-white">87</p>
+              <p className="mt-3 text-sm text-slate-200">Based on network, endpoint, and identity risk.</p>
             </div>
             <div className="rounded-3xl border border-slate-200 bg-white px-6 py-8 shadow-sm">
-              <p className="text-sm uppercase tracking-[0.2em] text-cyber-blue mb-4">Average response</p>
+              <p className="text-sm uppercase tracking-[0.2em] text-slate-600 mb-4 font-semibold">Average response</p>
               <p className="text-5xl font-bold text-slate-900">12m</p>
-              <p className="mt-3 text-sm text-slate-500">Time to contain high-risk incidents.</p>
+              <p className="mt-3 text-sm text-slate-700">Time to contain high-risk incidents.</p>
             </div>
             <div className="rounded-3xl border border-slate-200 bg-white px-6 py-8 shadow-sm">
-              <p className="text-sm uppercase tracking-[0.2em] text-cyber-blue mb-4">Threat coverage</p>
+              <p className="text-sm uppercase tracking-[0.2em] text-slate-600 mb-4 font-semibold">Threat coverage</p>
               <p className="text-5xl font-bold text-slate-900">98%</p>
-              <p className="mt-3 text-sm text-slate-500">Detected across endpoints, networks and cloud workloads.</p>
+              <p className="mt-3 text-sm text-slate-700">Detected across endpoints, networks and cloud workloads.</p>
             </div>
           </div>
         </div>
       </section>
 
       {/* ─── CTA SECTION ─── */}
-      <section className="relative py-28 px-6">
-        <div className="absolute inset-0 bg-gradient-to-t from-cyber-blue/10 via-transparent to-transparent" />
+      <section className="relative py-28 px-6 bg-[#02110b]">
+        <div className="absolute inset-0 bg-gradient-to-t from-[#0d3d1f]/20 via-transparent to-transparent" />
         <div className="max-w-3xl mx-auto text-center relative z-10">
-          <div className="p-1 rounded-3xl bg-gradient-to-r from-cyber-blue/20 via-cyber-cyan/20 to-blue-500/20">
-            <div className="bg-white border border-slate-200 rounded-3xl px-8 py-16 md:px-16 shadow-lg">
-              <div className="w-16 h-16 mx-auto mb-6 bg-gradient-to-br from-cyber-blue to-cyber-cyan rounded-2xl flex items-center justify-center shadow-xl shadow-cyber-blue/10">
-                <ShieldCheck className="w-8 h-8 text-white" />
+          <div className="p-1 rounded-3xl bg-gradient-to-r from-emerald-400/20 via-lime-300/20 to-emerald-300/20">
+            <div className="bg-[#081f17] border border-slate-800 rounded-3xl px-8 py-16 md:px-16 shadow-2xl shadow-emerald-400/10">
+              <div className="w-16 h-16 mx-auto mb-6 bg-gradient-to-br from-emerald-400 to-lime-300 rounded-2xl flex items-center justify-center shadow-xl shadow-emerald-400/30">
+                <ShieldCheck className="w-8 h-8 text-slate-950" />
               </div>
-              <h2 className="text-3xl md:text-4xl font-extrabold tracking-tight mb-4 text-slate-900">
+              <h2 className="text-4xl md:text-5xl lg:text-6xl font-black tracking-tight mb-4 text-white">
                 <span className="block">Ready to Secure Your</span>
-                <span className="block text-cyber-blue">Digital Infrastructure?</span>
+                <span className="block text-emerald-400">Digital Infrastructure?</span>
               </h2>
-              <p className="text-slate-600 mb-8 max-w-lg mx-auto leading-relaxed">
+              <p className="text-slate-300 mb-8 max-w-lg mx-auto leading-relaxed">
                 Access the full security operations centre with AI-powered detection, real-time monitoring, and automated threat response.
               </p>
               <Link
                 to="/dashboard"
-                className="inline-flex items-center gap-2 px-8 py-4 bg-gradient-to-r from-cyber-blue to-cyber-cyan hover:from-cyber-cyan hover:to-blue-500 text-white font-bold rounded-xl transition-all duration-300 hover:shadow-2xl hover:shadow-cyber-blue/20 hover:-translate-y-0.5"
+                className="inline-flex items-center gap-2 px-8 py-4 bg-gradient-to-r from-emerald-400 to-lime-300 hover:from-lime-300 hover:to-emerald-400 text-slate-950 font-black rounded-xl transition-all duration-300 hover:shadow-2xl hover:shadow-emerald-400/20 hover:-translate-y-0.5"
               >
                 <ShieldAlert className="w-5 h-5" />
                 Enter Security Operations Centre
@@ -413,19 +418,25 @@ export default function HomePage() {
       </section>
 
       {/* ─── FOOTER ─── */}
-      <footer className="border-t border-slate-200 py-10 px-6 bg-white">
-        <div className="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4">
-          <div className="flex items-center gap-3">
-            <ShieldAlert className="w-5 h-5 text-cyber-blue" />
-            <span className="font-bold text-slate-900">CyberShield <span className="text-cyber-blue">AI</span></span>
-            <span className="text-slate-500 text-sm">|</span>
-            <span className="text-slate-500 text-sm">Detect. Predict. Defend.</span>
+      <footer className="border-t border-slate-800 py-16 px-6 bg-[#01100a] text-slate-300">
+        <div className="max-w-7xl mx-auto flex flex-col lg:flex-row items-center justify-between gap-6">
+          <div className="space-y-4 text-center lg:text-left">
+            <span className="text-xs uppercase tracking-[0.45em] text-emerald-400">Your infrastructure cannot wait</span>
+            <h2 className="text-4xl md:text-5xl lg:text-6xl font-black tracking-tight text-white">Secure every layer with the platform built for rapid response.</h2>
+            <p className="max-w-2xl text-slate-400">The average attacker is present for 197 days before detection. Every hour matters — request a live demo and see the platform in your environment.</p>
           </div>
-          <div className="flex items-center gap-2">
-            <CheckCircle2 className="w-4 h-4 text-status-safe" />
-            <span className="text-xs text-slate-500">All Systems Operational</span>
-            <span className="text-slate-400 mx-2">·</span>
-            <span className="text-xs text-slate-500">© 2026 CyberShield AI</span>
+
+          <div className="flex flex-col sm:flex-row items-center gap-4">
+            <Link
+              to="/dashboard"
+              className="inline-flex items-center justify-center px-8 py-4 bg-gradient-to-r from-emerald-400 to-lime-300 text-slate-950 font-black rounded-xl shadow-2xl shadow-emerald-400/20"
+            >
+              Request a Live Demo
+            </Link>
+            <div className="text-sm text-slate-500 text-center lg:text-right">
+              <p>© 2026 CyberShield AI</p>
+              <p className="mt-2">Built for urgent security operations.</p>
+            </div>
           </div>
         </div>
       </footer>
