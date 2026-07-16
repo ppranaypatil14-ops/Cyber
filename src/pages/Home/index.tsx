@@ -107,18 +107,49 @@ function FeatureCard({ icon: Icon, title, desc, gradient, delay }: any) {
   );
 }
 
-/* ───────────── stat card ───────────── */
-function StatCard({ value, suffix, label, icon: Icon }: any) {
+/* ───────────── live stat card ───────────── */
+function LiveStatCard({ initialValue, suffix, label, icon: Icon, isLive = false, isFluctuating = false }: any) {
+  const [value, setValue] = useState(initialValue);
+
+  // Initial animation
   const num = useCounter(value);
+
+  useEffect(() => {
+    if (!isLive && !isFluctuating) return;
+    
+    const interval = setInterval(() => {
+      if (isLive) {
+        // Increment slowly over time
+        setValue((prev: number) => prev + Math.floor(Math.random() * 3));
+      } else if (isFluctuating) {
+        // Fluctuate latency
+        setValue(initialValue + Math.floor(Math.random() * 5) - 2);
+      }
+    }, isFluctuating ? 2000 : 3500);
+
+    return () => clearInterval(interval);
+  }, [isLive, isFluctuating, initialValue]);
+
+  // Use the animated `num` for the initial load, then switch to the real `value` once loaded
+  const displayValue = num === value || isLive || isFluctuating ? value : num;
+
   return (
     <div className="text-center px-6 py-4">
       <div className="flex items-center justify-center gap-2 mb-2">
         <Icon className="w-5 h-5 text-cyber-cyan/60" />
         <span className="text-4xl font-bold bg-gradient-to-r from-white to-slate-300 bg-clip-text text-transparent">
-          {num.toLocaleString()}{suffix}
+          {displayValue.toLocaleString()}{suffix}
         </span>
       </div>
-      <p className="text-sm text-slate-400 font-medium">{label}</p>
+      <p className="text-sm text-slate-400 font-medium flex items-center justify-center gap-1.5">
+        {label}
+        {(isLive || isFluctuating) && (
+          <span className="relative flex h-2 w-2">
+            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+            <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
+          </span>
+        )}
+      </p>
     </div>
   );
 }
@@ -159,6 +190,18 @@ function createRandomThreat() {
   const time = new Date().toLocaleTimeString('en-US', { hour12: false, hour: 'numeric', minute: 'numeric', second: 'numeric' });
   
   return { id, type: severity, source: ip, attack: vector, target, time };
+}
+
+/* ───────────── insight stat ───────────── */
+function InsightStat({ label, value, suffix, desc }: { label: string, value: number, suffix: string, desc: string }) {
+  const num = useCounter(value, 3000); // 3 second animation
+  return (
+    <div className="rounded-3xl border border-slate-200 bg-white px-6 py-8 shadow-sm hover:shadow-md transition-shadow">
+      <p className="text-sm uppercase tracking-[0.2em] text-slate-600 mb-4 font-semibold">{label}</p>
+      <p className="text-5xl font-bold text-slate-900">{num}{suffix}</p>
+      <p className="mt-3 text-sm text-slate-700">{desc}</p>
+    </div>
+  );
 }
 
 /* ═══════════════════════════════════════════════
@@ -339,10 +382,10 @@ export default function HomePage() {
         <div className="max-w-5xl mx-auto">
           <div className="bg-[#081f17] border border-slate-800 rounded-2xl p-8 shadow-sm">
             <div className="grid grid-cols-2 md:grid-cols-4 divide-x divide-slate-800">
-              <StatCard value={99} suffix=".97%" label="Uptime SLA" icon={Server} />
-              <StatCard value={2847} suffix="" label="Threats Blocked Today" icon={ShieldAlert} />
-              <StatCard value={1248} suffix="" label="Assets Monitored" icon={Globe} />
-              <StatCard value={18} suffix="ms" label="Detection Latency" icon={Zap} />
+              <LiveStatCard initialValue={99} suffix=".97%" label="Uptime SLA" icon={Server} />
+              <LiveStatCard initialValue={2847} suffix="" label="Threats Blocked Today" icon={ShieldAlert} isLive={true} />
+              <LiveStatCard initialValue={1248} suffix="" label="Assets Monitored" icon={Globe} />
+              <LiveStatCard initialValue={18} suffix="ms" label="Detection Latency" icon={Zap} isFluctuating={true} />
             </div>
           </div>
         </div>
@@ -386,21 +429,9 @@ export default function HomePage() {
           </div>
 
           <div className="mt-16 grid grid-cols-1 md:grid-cols-3 gap-4">
-            <div className="rounded-3xl bg-gradient-to-r from-cyber-blue to-cyber-cyan px-6 py-8 text-white shadow-xl">
-            <span className="text-sm uppercase tracking-[0.2em] text-emerald-200 mb-4">Security score</span>
-              <p className="text-5xl font-bold text-white">87</p>
-              <p className="mt-3 text-sm text-slate-200">Based on network, endpoint, and identity risk.</p>
-            </div>
-            <div className="rounded-3xl border border-slate-200 bg-white px-6 py-8 shadow-sm">
-              <p className="text-sm uppercase tracking-[0.2em] text-slate-600 mb-4 font-semibold">Average response</p>
-              <p className="text-5xl font-bold text-slate-900">12m</p>
-              <p className="mt-3 text-sm text-slate-700">Time to contain high-risk incidents.</p>
-            </div>
-            <div className="rounded-3xl border border-slate-200 bg-white px-6 py-8 shadow-sm">
-              <p className="text-sm uppercase tracking-[0.2em] text-slate-600 mb-4 font-semibold">Threat coverage</p>
-              <p className="text-5xl font-bold text-slate-900">98%</p>
-              <p className="mt-3 text-sm text-slate-700">Detected across endpoints, networks and cloud workloads.</p>
-            </div>
+            <InsightStat label="Security score" value={87} suffix="" desc="Based on network, endpoint, and identity risk." />
+            <InsightStat label="Average response" value={8} suffix="m" desc="Time to contain high-risk incidents." />
+            <InsightStat label="Threat coverage" value={99} suffix="%" desc="Detected across endpoints, networks and cloud workloads." />
           </div>
         </div>
       </section>
@@ -414,7 +445,7 @@ export default function HomePage() {
               <div className="w-16 h-16 mx-auto mb-6 bg-gradient-to-br from-emerald-400 to-lime-300 rounded-2xl flex items-center justify-center shadow-xl shadow-emerald-400/30">
                 <ShieldCheck className="w-8 h-8 text-slate-950" />
               </div>
-              <h2 className="text-4xl md:text-5xl lg:text-6xl font-black tracking-tight mb-4 text-white">
+              <h2 className="text-4xl md:text-5xl lg:text-6xl font-black tracking-tight mb-4 text-slate-50">
                 <span className="block">Ready to Secure Your</span>
                 <span className="block text-emerald-400">Digital Infrastructure?</span>
               </h2>
@@ -439,7 +470,7 @@ export default function HomePage() {
         <div className="max-w-7xl mx-auto flex flex-col lg:flex-row items-center justify-between gap-6">
           <div className="space-y-4 text-center lg:text-left">
             <span className="text-xs uppercase tracking-[0.45em] text-emerald-400">Your infrastructure cannot wait</span>
-            <h2 className="text-4xl md:text-5xl lg:text-6xl font-black tracking-tight text-white">Secure every layer with the platform built for rapid response.</h2>
+            <h2 className="text-4xl md:text-5xl lg:text-6xl font-black tracking-tight text-slate-50">Secure every layer with the platform built for rapid response.</h2>
             <p className="max-w-2xl text-slate-400">The average attacker is present for 197 days before detection. Every hour matters — request a live demo and see the platform in your environment.</p>
           </div>
 
