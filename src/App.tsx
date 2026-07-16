@@ -10,6 +10,7 @@ import Copilot from "./pages/Copilot";
 import Reports from "./pages/Reports";
 import Settings from "./pages/Settings";
 import Login from "./pages/Login";
+import Register from "./pages/Register";
 import Profile from "./pages/Profile";
 
 function App() {
@@ -21,6 +22,7 @@ function App() {
         
         {/* Authentication */}
         <Route path="/login" element={<Login />} />
+        <Route path="/register" element={<Register />} />
 
         {/* Dashboard — wrapped with sidebar + topnav layout */}
         <Route path="/dashboard" element={<AppLayout />}>

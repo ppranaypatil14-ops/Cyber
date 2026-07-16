@@ -1,19 +1,13 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import { HelpCircle } from 'lucide-react';
 
-export default function Login() {
+export default function Register() {
   const navigate = useNavigate();
+  const [fullName, setFullName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
 
-  useEffect(() => {
-    if (localStorage.getItem('isAuthenticated') === 'true') {
-      navigate('/dashboard');
-    }
-  }, [navigate]);
-
-  const handleLogin = (e: React.FormEvent) => {
+  const handleRegister = (e: React.FormEvent) => {
     e.preventDefault();
     localStorage.setItem('isAuthenticated', 'true');
     navigate('/dashboard');
@@ -24,35 +18,51 @@ export default function Login() {
       
       {/* Header */}
       <header className="flex items-center justify-between px-8 py-4 bg-white border-b border-slate-200">
-        <div className="text-xl font-bold text-[#0052CC] tracking-tight">
-          Cyber<span className="font-semibold text-slate-800">Login</span>
+        <div className="flex items-center gap-8">
+          <div className="text-xl font-bold text-[#0052CC] tracking-tight">
+            Cyber<span className="font-semibold text-slate-800">Login</span>
+          </div>
+          <div className="hidden md:flex items-center gap-6 text-sm font-medium text-slate-600">
+            <a href="#" className="hover:text-slate-900">Product</a>
+            <a href="#" className="hover:text-slate-900">Solutions</a>
+            <a href="#" className="hover:text-slate-900">Pricing</a>
+          </div>
         </div>
         
         <div className="flex items-center gap-6 text-sm font-medium">
-          <div className="flex items-center gap-6 text-slate-600">
-            <a href="#" className="text-[#0052CC] border-b-2 border-[#0052CC] pb-1">Sign In</a>
-            <Link to="/register" className="hover:text-slate-900 pb-1">Register</Link>
-          </div>
-          <button className="text-slate-500 hover:text-slate-800 ml-4">
-            <HelpCircle className="w-5 h-5" />
+          <Link to="/login" className="text-slate-600 hover:text-slate-900">Sign In</Link>
+          <button className="bg-[#0052CC] hover:bg-[#0047b3] text-white px-4 py-2 rounded-md transition-colors">
+            Create Account
           </button>
         </div>
       </header>
 
       {/* Main Content */}
-      <main className="flex-1 flex items-center justify-center p-4">
+      <main className="flex-1 flex items-center justify-center p-4 py-12">
         <div className="w-full max-w-md bg-white border border-slate-200 rounded-xl p-8 sm:p-10 shadow-sm">
           
           <div className="text-center mb-8">
-            <h1 className="text-3xl font-bold text-slate-900 mb-2">Sign In</h1>
-            <p className="text-slate-500 text-sm">Access your professional dashboard</p>
+            <h1 className="text-3xl font-bold text-slate-900 mb-2">Create Account</h1>
+            <p className="text-slate-500 text-sm">Join our professional community</p>
           </div>
 
-          <form onSubmit={handleLogin} className="space-y-5">
+          <form onSubmit={handleRegister} className="space-y-5">
             <div className="space-y-1.5">
-              <label className="block text-sm font-medium text-slate-700">Email or Username</label>
+              <label className="block text-sm font-medium text-slate-700">Full Name</label>
               <input
                 type="text"
+                required
+                value={fullName}
+                onChange={(e) => setFullName(e.target.value)}
+                placeholder="John Doe"
+                className="w-full border border-slate-300 rounded-md px-4 py-2.5 text-sm text-slate-900 placeholder-slate-400 focus:outline-none focus:border-[#0052CC] focus:ring-1 focus:ring-[#0052CC] transition-colors"
+              />
+            </div>
+
+            <div className="space-y-1.5">
+              <label className="block text-sm font-medium text-slate-700">Email Address</label>
+              <input
+                type="email"
                 required
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
@@ -62,25 +72,24 @@ export default function Login() {
             </div>
 
             <div className="space-y-1.5">
-              <div className="flex items-center justify-between">
-                <label className="block text-sm font-medium text-slate-700">Password</label>
-                <a href="#" className="text-sm font-medium text-[#0052CC] hover:underline">Forgot Password?</a>
-              </div>
+              <label className="block text-sm font-medium text-slate-700">Password</label>
               <input
                 type="password"
                 required
+                minLength={8}
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 placeholder="••••••••"
                 className="w-full border border-slate-300 rounded-md px-4 py-2.5 text-sm text-slate-900 placeholder-slate-400 tracking-widest focus:outline-none focus:border-[#0052CC] focus:ring-1 focus:ring-[#0052CC] transition-colors"
               />
+              <p className="text-xs text-slate-500 mt-1">Must be at least 8 characters long.</p>
             </div>
 
             <button
               type="submit"
-              className="w-full bg-[#0052CC] hover:bg-[#0047b3] text-white font-medium py-2.5 rounded-md transition-colors mt-2"
+              className="w-full bg-[#0052CC] hover:bg-[#0047b3] text-white font-medium py-2.5 rounded-md transition-colors mt-4"
             >
-              Login
+              Create Account
             </button>
           </form>
 
@@ -104,12 +113,12 @@ export default function Login() {
                 <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" />
                 <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" />
               </svg>
-              Login with Google
+              Sign up with Google
             </button>
           </div>
 
           <div className="mt-8 text-center text-sm text-slate-600">
-            Don't have an account? <Link to="/register" className="font-semibold text-[#0052CC] hover:underline">Create an account</Link>
+            Already have an account? <Link to="/login" className="font-semibold text-[#0052CC] hover:underline">Sign In</Link>
           </div>
 
         </div>
@@ -117,14 +126,15 @@ export default function Login() {
 
       {/* Footer */}
       <footer className="bg-[#F9FAFB] border-t border-slate-200 py-6 px-8 flex flex-col md:flex-row items-center justify-between gap-4 text-sm text-slate-500">
-        <div>
-          <p className="font-semibold text-slate-700">CyberLogin Systems</p>
-          <p className="text-slate-400 mt-1">© 2026 CyberLogin Systems. All rights reserved.</p>
+        <div className="flex items-center gap-4">
+          <p className="font-bold text-slate-800">CyberLogin</p>
+          <p className="text-slate-500">© 2026 CyberLogin Inc. All rights reserved.</p>
         </div>
         <div className="flex items-center gap-6">
           <a href="#" className="hover:text-slate-700">Privacy Policy</a>
           <a href="#" className="hover:text-slate-700">Terms of Service</a>
-          <a href="#" className="hover:text-slate-700">Help Center</a>
+          <a href="#" className="hover:text-slate-700">Security</a>
+          <a href="#" className="hover:text-slate-700">Status</a>
         </div>
       </footer>
 
