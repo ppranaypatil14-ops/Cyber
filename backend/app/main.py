@@ -12,6 +12,7 @@ from app.schemas.security_event import SecurityEvent
 from app.schemas.incident import Incident
 from app.services.risk_engine import calculate_risk
 from app.services.correlation_engine import correlate_new_event
+from app.services.investigation_summary import determine_attack_name, determine_attack_stage, gather_evidence, recommend_actions, risk_level_from_severity
 
 app = FastAPI(title="CyberShield AI")
 
@@ -185,5 +186,13 @@ def get_incidents():
             })
         timeline.sort(key=lambda x: x["time"])  # oldest first
         inc["timeline"] = timeline
+        # Investigation summary
+        attack_name = determine_attack_name(timeline)
+        inc["attack_name"] = attack_name
+        inc["attack_description"] = f"Generated attack based on observed events: {attack_name}"
+        inc["attack_stage"] = determine_attack_stage(timeline)
+        inc["evidence"] = gather_evidence(timeline)
+        inc["recommended_actions"] = recommend_actions(attack_name)
+        inc["risk_level"] = risk_level_from_severity(inc.get("severity", ""))
     incidents.sort(key=lambda x: x.get("latest_activity_time", ""), reverse=True)
     return incidents
