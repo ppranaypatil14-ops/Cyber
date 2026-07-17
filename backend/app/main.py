@@ -1,15 +1,18 @@
 import os
+import json
+from datetime import datetime
 from fastapi import FastAPI, HTTPException, status
 import joblib
 import pandas as pd
 
-from app.schemas.activity import Activity
-from app.services.risk_engine import calculate_risk
 from fastapi.middleware.cors import CORSMiddleware
+
+from app.schemas.activity import Activity
 from app.schemas.security_event import SecurityEvent
-import json
+from app.schemas.incident import Incident
+from app.services.risk_engine import calculate_risk
 from app.services.correlation_engine import correlate_new_event
-from datetime import datetime
+
 app = FastAPI(title="CyberShield AI")
 
 app.add_middleware(
@@ -20,74 +23,62 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# ── Model path ──────────────────────────────────────────────────────
+# Model path
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 MODEL_PATH = os.path.join(BASE_DIR, "models", "anomaly_model.joblib")
-
 
 @app.get("/")
 def read_root():
     return {"message": "CyberShield AI backend is running"}
 
-
 @app.get("/health")
 def read_health():
     if not os.path.isfile(MODEL_PATH):
         return {"status": "healthy", "ml_model": "not_trained"}
-
     try:
         joblib.load(MODEL_PATH)
         return {"status": "healthy", "ml_model": "loaded"}
     except Exception:
         return {"status": "degraded", "ml_model": "load_failed"}
 
-
 @app.post("/api/analyze")
 def analyze_activity(activity: Activity):
-    # 1. Load the saved model
+    # Load model
     if not os.path.isfile(MODEL_PATH):
         raise HTTPException(
             status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
-            detail="Model file missing"
+            detail="Model file missing",
         )
-        
     try:
         model = joblib.load(MODEL_PATH)
-    except Exception as e:
+    except Exception:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail="Model loading failed"
+            detail="Model loading failed",
         )
-
-    # 2. Convert the request into the format expected by the model
+    # Prepare features
     features = [
         "login_hour",
         "failed_logins",
         "known_device",
         "download_mb",
         "sensitive_file_access",
-        "antivirus_active"
+        "antivirus_active",
     ]
-    
     input_data = pd.DataFrame([activity.model_dump()])[features]
-
-    # 3. Run prediction using the real Isolation Forest model
+    # Predict
     try:
         prediction_val = model.predict(input_data)[0]
         raw_score = model.decision_function(input_data)[0]
     except Exception as e:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Prediction failure: {str(e)}"
+            detail=f"Prediction failure: {str(e)}",
         )
-        
     is_anomaly = bool(prediction_val == -1)
     classification = "Anomaly" if is_anomaly else "Normal"
-    
-    # Map raw_score (typically -0.3 to 0.3) to 0-100 (100 = highly anomalous)
-    # raw_score < 0 is anomaly. raw_score > 0 is normal.
+    # Map raw_score to 0-100
     ml_anomaly_score = int(max(0, min(100, 50 - (raw_score * 200))))
-    
     if ml_anomaly_score <= 29:
         behaviour_difference = "Low"
     elif ml_anomaly_score <= 59:
@@ -96,13 +87,9 @@ def analyze_activity(activity: Activity):
         behaviour_difference = "High"
     else:
         behaviour_difference = "Very High"
-
-    # 4. Calculate Risk
+    # Calculate risk
     risk_data = calculate_risk(activity, ml_anomaly_score)
-
-    # 5. Return the combined response
-
-    # --- Store the security event ---
+    # Store security event
     event = SecurityEvent(
         employee_id=getattr(activity, "employee_id", None),
         login_time=datetime.utcnow(),
@@ -115,9 +102,8 @@ def analyze_activity(activity: Activity):
         antivirus_status=activity.antivirus_active,
         ml_classification=classification,
         risk_score=risk_data["final_risk_score"],
-        severity=risk_data["severity"]
+        severity=risk_data["severity"],
     )
-    # Ensure data directory exists
     data_dir = os.path.join(os.path.dirname(__file__), "data")
     os.makedirs(data_dir, exist_ok=True)
     events_path = os.path.join(data_dir, "events.json")
@@ -129,10 +115,8 @@ def analyze_activity(activity: Activity):
     events.append(event.model_dump())
     with open(events_path, "w", encoding="utf-8") as f:
         json.dump(events, f, indent=2)
-
-    # Run correlation engine on new event
+    # Correlation engine triggers incident creation/update
     correlate_new_event(event)
-
     return {
         "is_anomaly": is_anomaly,
         "classification": classification,
@@ -143,14 +127,12 @@ def analyze_activity(activity: Activity):
         "model": "Isolation Forest",
         "training_records": 3000,
         "behaviour_difference": behaviour_difference,
-        "reasons": risk_data["reasons"]
+        "reasons": risk_data["reasons"],
     }
 
 @app.get("/incidents")
 def get_incidents():
-    """Return stored incidents sorted newest first.
-    If incidents.json does not exist or is empty, return an empty list.
-    """
+    """Return incidents sorted newest first, each enriched with a chronological timeline of related events."""
     data_dir = os.path.join(os.path.dirname(__file__), "data")
     incidents_path = os.path.join(data_dir, "incidents.json")
     if not os.path.isfile(incidents_path):
@@ -161,5 +143,47 @@ def get_incidents():
             incidents = json.loads(content) if content else []
     except Exception:
         return []
+    # Load all events for timeline construction
+    events_path = os.path.join(data_dir, "events.json")
+    try:
+        with open(events_path, "r", encoding="utf-8") as f_events:
+            events_content = f_events.read().strip()
+            all_events = json.loads(events_content) if events_content else []
+    except Exception:
+        all_events = []
+    def get_event_type(ev):
+        if ev.get("failed_login_attempts", 0) > 5:
+            return "Multiple Failed Login Attempts"
+        if ev.get("device_status", 1) == 0:
+            return "Unknown Device Login"
+        if ev.get("sensitive_file_access", 0) == 1:
+            return "Sensitive File Access"
+        if ev.get("download_size", 0) > 5000:
+            return "Large Download"
+        return "Normal Activity"
+    for inc in incidents:
+        employee_id = inc.get("employee_id")
+        start_time = inc.get("start_time")
+        end_time = inc.get("latest_activity_time")
+        timeline = []
+        for ev in all_events:
+            if ev.get("employee_id") != employee_id:
+                continue
+            ev_time = ev.get("login_time")
+            if not ev_time:
+                continue
+            if start_time and ev_time < start_time:
+                continue
+            if end_time and ev_time > end_time:
+                continue
+            timeline.append({
+                "time": ev_time,
+                "event_type": get_event_type(ev),
+                "risk_score": ev.get("risk_score"),
+                "ml_classification": ev.get("ml_classification"),
+                "description": f"{get_event_type(ev)} detected.",
+            })
+        timeline.sort(key=lambda x: x["time"])  # oldest first
+        inc["timeline"] = timeline
     incidents.sort(key=lambda x: x.get("latest_activity_time", ""), reverse=True)
     return incidents
