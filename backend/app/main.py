@@ -6,7 +6,10 @@ import pandas as pd
 from app.schemas.activity import Activity
 from app.services.risk_engine import calculate_risk
 from fastapi.middleware.cors import CORSMiddleware
-
+from app.schemas.security_event import SecurityEvent
+import json
+from app.services.correlation_engine import correlate_new_event
+from datetime import datetime
 app = FastAPI(title="CyberShield AI")
 
 app.add_middleware(
@@ -98,6 +101,38 @@ def analyze_activity(activity: Activity):
     risk_data = calculate_risk(activity, ml_anomaly_score)
 
     # 5. Return the combined response
+
+    # --- Store the security event ---
+    event = SecurityEvent(
+        employee_id=getattr(activity, "employee_id", None),
+        login_time=datetime.utcnow(),
+        device_status=activity.known_device,
+        ip_address=getattr(activity, "ip_address", None),
+        login_location=getattr(activity, "login_location", None),
+        failed_login_attempts=activity.failed_logins,
+        download_size=activity.download_mb,
+        sensitive_file_access=activity.sensitive_file_access,
+        antivirus_status=activity.antivirus_active,
+        ml_classification=classification,
+        risk_score=risk_data["final_risk_score"],
+        severity=risk_data["severity"]
+    )
+    # Ensure data directory exists
+    data_dir = os.path.join(os.path.dirname(__file__), "data")
+    os.makedirs(data_dir, exist_ok=True)
+    events_path = os.path.join(data_dir, "events.json")
+    try:
+        with open(events_path, "r", encoding="utf-8") as f:
+            events = json.load(f)
+    except FileNotFoundError:
+        events = []
+    events.append(event.model_dump())
+    with open(events_path, "w", encoding="utf-8") as f:
+        json.dump(events, f, indent=2)
+
+    # Run correlation engine on new event
+    correlate_new_event(event)
+
     return {
         "is_anomaly": is_anomaly,
         "classification": classification,
@@ -110,3 +145,21 @@ def analyze_activity(activity: Activity):
         "behaviour_difference": behaviour_difference,
         "reasons": risk_data["reasons"]
     }
+
+@app.get("/incidents")
+def get_incidents():
+    """Return stored incidents sorted newest first.
+    If incidents.json does not exist or is empty, return an empty list.
+    """
+    data_dir = os.path.join(os.path.dirname(__file__), "data")
+    incidents_path = os.path.join(data_dir, "incidents.json")
+    if not os.path.isfile(incidents_path):
+        return []
+    try:
+        with open(incidents_path, "r", encoding="utf-8") as f:
+            content = f.read().strip()
+            incidents = json.loads(content) if content else []
+    except Exception:
+        return []
+    incidents.sort(key=lambda x: x.get("latest_activity_time", ""), reverse=True)
+    return incidents
