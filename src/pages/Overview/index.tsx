@@ -1,226 +1,121 @@
-import { Activity, ShieldAlert, Monitor, Clock, ChevronRight, AlertTriangle } from 'lucide-react';
-import { 
-  AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
-  BarChart, Bar, Legend
-} from 'recharts';
-import { networkActivityData, threatDetectionData, recentAlerts } from '../../data/mockDashboardData';
+import { Bot, Network, Grid, FlaskConical, Zap, Sparkles } from 'lucide-react';
+import { Link } from 'react-router-dom';
 import { cn } from '../../utils/cn';
 
-function SummaryCard({ title, value, change, icon: Icon, isCritical = false }: any) {
-  return (
-    <div className="bg-cyber-card border border-slate-800 rounded-xl p-5 shadow-lg relative overflow-hidden">
-      <div className={cn("absolute top-0 right-0 w-24 h-24 bg-gradient-to-br opacity-10 rounded-full blur-2xl -mr-8 -mt-8", isCritical ? "from-status-critical to-red-900" : "from-cyber-blue to-cyber-cyan")}></div>
-      <div className="flex justify-between items-start mb-4">
-        <div>
-          <p className="text-slate-400 text-sm font-medium mb-1">{title}</p>
-          <h3 className="text-3xl font-bold text-white tracking-tight">{value}</h3>
-        </div>
-        <div className={cn("p-2 rounded-lg", isCritical ? "bg-status-critical/20 text-status-critical" : "bg-cyber-blue/20 text-cyber-cyan")}>
-          <Icon className="w-5 h-5" />
-        </div>
-      </div>
-      <p className={cn("text-sm font-medium", isCritical ? "text-status-critical" : "text-status-safe")}>{change}</p>
-    </div>
-  );
-}
+const modules = [
+  {
+    title: 'Autonomous Detection',
+    description: 'AI-driven threat hunting and automated response mechanisms.',
+    icon: Bot,
+    path: '/dashboard/alerts',
+    color: 'text-blue-300',
+    bg: 'bg-blue-500/20',
+    border: 'border-blue-500/30',
+    hoverBorder: 'hover:border-blue-400',
+    shadow: 'hover:shadow-blue-500/20',
+    gradient: 'linear-gradient(135deg, rgba(59,130,246,0.15) 0%, transparent 100%)'
+  },
+  {
+    title: 'Attack Correlation',
+    description: 'Advanced graph-based analysis of multi-stage attacks.',
+    icon: Network,
+    path: '/dashboard/investigation',
+    color: 'text-indigo-300',
+    bg: 'bg-indigo-500/20',
+    border: 'border-indigo-500/30',
+    hoverBorder: 'hover:border-indigo-400',
+    shadow: 'hover:shadow-indigo-500/20',
+    gradient: 'linear-gradient(135deg, rgba(99,102,241,0.15) 0%, transparent 100%)'
+  },
+  {
+    title: 'MITRE ATT&CK Matrix',
+    description: 'Real-time mapping of adversary tactics and techniques.',
+    icon: Grid,
+    path: '/dashboard/mitre',
+    color: 'text-purple-300',
+    bg: 'bg-purple-500/20',
+    border: 'border-purple-500/30',
+    hoverBorder: 'hover:border-purple-400',
+    shadow: 'hover:shadow-purple-500/20',
+    gradient: 'linear-gradient(135deg, rgba(168,85,247,0.15) 0%, transparent 100%)'
+  },
+  {
+    title: 'Security Lab',
+    description: 'Isolated environment for malware analysis and detonation.',
+    icon: FlaskConical,
+    path: '/dashboard/lab',
+    color: 'text-cyan-300',
+    bg: 'bg-cyan-500/20',
+    border: 'border-cyan-500/30',
+    hoverBorder: 'hover:border-cyan-400',
+    shadow: 'hover:shadow-cyan-500/20',
+    gradient: 'linear-gradient(135deg, rgba(6,182,212,0.15) 0%, transparent 100%)'
+  },
+  {
+    title: 'Stress Testing',
+    description: 'Continuous simulation of attack vectors and vulnerabilities.',
+    icon: Zap,
+    path: '/dashboard/lab',
+    color: 'text-amber-300',
+    bg: 'bg-amber-500/20',
+    border: 'border-amber-500/30',
+    hoverBorder: 'hover:border-amber-400',
+    shadow: 'hover:shadow-amber-500/20',
+    gradient: 'linear-gradient(135deg, rgba(245,158,11,0.15) 0%, transparent 100%)'
+  },
+  {
+    title: 'AI Security Co-Pilot',
+    description: 'Your intelligent assistant for security operations and triage.',
+    icon: Sparkles,
+    path: '/dashboard/copilot',
+    color: 'text-emerald-300',
+    bg: 'bg-emerald-500/20',
+    border: 'border-emerald-500/30',
+    hoverBorder: 'hover:border-emerald-400',
+    shadow: 'hover:shadow-emerald-500/20',
+    gradient: 'linear-gradient(135deg, rgba(16,185,129,0.15) 0%, transparent 100%)'
+  }
+];
 
 export default function OverviewDashboard() {
   return (
-    <div className="space-y-6 animate-in fade-in duration-500 pb-12">
+    <div className="max-w-[1400px] mx-auto space-y-10 animate-in fade-in duration-500 pb-12 pt-8">
       
       {/* Header */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-cyber-card pb-6">
-        <div>
-          <h1 className="text-2xl font-bold tracking-tight text-white mb-1">Security Operations Overview</h1>
-          <p className="text-slate-400 text-sm">AI-powered threat monitoring and cyber resilience intelligence.</p>
-        </div>
-        <div className="flex items-center gap-2 px-3 py-1.5 bg-status-safe/10 border border-status-safe/20 rounded-full">
-          <span className="relative flex h-2.5 w-2.5">
-            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-status-safe opacity-75"></span>
-            <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-status-safe"></span>
-          </span>
-          <span className="text-xs text-status-safe font-semibold tracking-wide uppercase">Live Monitoring Active</span>
-        </div>
+      <div className="mb-8">
+        <h1 className="text-3xl md:text-4xl font-extrabold tracking-tight" style={{ color: '#ffffff', textShadow: '0 2px 10px rgba(0,0,0,0.5)', opacity: 1 }}>Dashboard</h1>
       </div>
 
-      {/* Summary Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        <SummaryCard title="Total Monitored Assets" value="1,248" change="+24 this month" icon={Monitor} />
-        <SummaryCard title="Active Security Alerts" value="18" change="Requires attention" icon={Activity} />
-        <SummaryCard title="Critical Threats" value="3" change="Immediate action required" icon={ShieldAlert} isCritical={true} />
-        <SummaryCard title="Avg Response Time" value="1.8m" change="32% improvement" icon={Clock} />
-      </div>
-
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        
-        {/* Overall Security Risk */}
-        <div className="bg-cyber-card border border-slate-800 rounded-xl p-6 shadow-lg lg:col-span-1 flex flex-col">
-          <h2 className="text-lg font-bold text-white mb-6">Overall Security Risk</h2>
-          
-          <div className="flex-1 flex flex-col items-center justify-center">
-            <div className="relative w-40 h-40 flex items-center justify-center mb-6">
-              <svg className="w-full h-full transform -rotate-90" viewBox="0 0 100 100">
-                <circle cx="50" cy="50" r="45" fill="none" stroke="#1e293b" strokeWidth="8" />
-                <circle cx="50" cy="50" r="45" fill="none" stroke="#f97316" strokeWidth="8" strokeDasharray="283" strokeDashoffset="67.9" className="transition-all duration-1000 ease-out" />
-              </svg>
-              <div className="absolute flex flex-col items-center justify-center text-center">
-                <span className="text-3xl font-bold text-white">76</span>
-                <span className="text-xs text-slate-400 font-medium uppercase tracking-wider">Score</span>
+      {/* 2x3 Grid with adjusted smaller size and dark mode vibrant styling */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {modules.map((mod, idx) => {
+          const Icon = mod.icon;
+          return (
+            <Link 
+              key={idx} 
+              to={mod.path}
+              className={cn(
+                "group relative bg-[#0f3b2c]/40 border rounded-[20px] p-6 hover:-translate-y-1.5 transition-all duration-500 flex flex-col items-center justify-center text-center overflow-hidden min-h-[240px] shadow-lg",
+                mod.border,
+                mod.hoverBorder,
+                mod.shadow
+              )}
+            >
+              {/* Vibrant subtle gradient background on hover */}
+              <div 
+                className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 -z-10" 
+                style={{ background: mod.gradient }} 
+              />
+              
+              <div className={cn("w-20 h-20 rounded-2xl flex items-center justify-center mb-8 transition-transform duration-500 group-hover:scale-110", mod.bg, mod.border, "border")}>
+                <Icon className={cn("w-10 h-10", mod.color)} />
               </div>
-            </div>
-
-            <div className="w-full bg-status-high/10 border border-status-high/20 rounded-lg p-4 mb-4">
-              <div className="flex items-center gap-2 mb-2">
-                <AlertTriangle className="w-4 h-4 text-status-high" />
-                <span className="text-sm font-bold text-status-high tracking-wider uppercase">Current Level: High</span>
-              </div>
-              <p className="text-xs text-slate-300 leading-relaxed">
-                <strong className="text-cyber-cyan">AI Analysis:</strong> Multiple unusual authentication attempts and abnormal data-access patterns have increased the organisation's security risk.
-              </p>
-            </div>
-            
-            <button className="w-full py-2.5 bg-cyber-blue hover:bg-cyber-blue/80 text-white text-sm font-medium rounded-lg transition-colors flex items-center justify-center gap-2">
-              View Risk Analysis
-              <ChevronRight className="w-4 h-4" />
-            </button>
-          </div>
-        </div>
-
-        {/* Network Activity Graph */}
-        <div className="bg-cyber-card border border-slate-800 rounded-xl p-6 shadow-lg lg:col-span-2">
-          <div className="flex justify-between items-center mb-6">
-            <h2 className="text-lg font-bold text-white">Network Activity (Last 24h)</h2>
-          </div>
-          <div className="h-72 w-full">
-            <ResponsiveContainer width="100%" height="100%">
-              <AreaChart data={networkActivityData} margin={{ top: 10, right: 10, left: 0, bottom: 0 }}>
-                <defs>
-                  <linearGradient id="colorNormal" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="5%" stopColor="#06b6d4" stopOpacity={0.3}/>
-                    <stop offset="95%" stopColor="#06b6d4" stopOpacity={0}/>
-                  </linearGradient>
-                  <linearGradient id="colorSuspicious" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="5%" stopColor="#f59e0b" stopOpacity={0.3}/>
-                    <stop offset="95%" stopColor="#f59e0b" stopOpacity={0}/>
-                  </linearGradient>
-                </defs>
-                <CartesianGrid strokeDasharray="3 3" stroke="#1e293b" vertical={false} />
-                <XAxis dataKey="time" stroke="#64748b" fontSize={12} tickLine={false} axisLine={false} />
-                <YAxis stroke="#64748b" fontSize={12} tickLine={false} axisLine={false} tickFormatter={(val) => `${val/1000}k`} />
-                <Tooltip 
-                  contentStyle={{ backgroundColor: '#0f172a', borderColor: '#1e293b', borderRadius: '8px' }}
-                  itemStyle={{ fontSize: '12px' }}
-                  labelStyle={{ color: '#94a3b8', fontSize: '12px', marginBottom: '4px' }}
-                />
-                <Area type="monotone" dataKey="normal" stroke="#06b6d4" strokeWidth={2} fillOpacity={1} fill="url(#colorNormal)" name="Normal Traffic" />
-                <Area type="monotone" dataKey="suspicious" stroke="#f59e0b" strokeWidth={2} fillOpacity={1} fill="url(#colorSuspicious)" name="Suspicious" />
-              </AreaChart>
-            </ResponsiveContainer>
-          </div>
-        </div>
-
-      </div>
-
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        
-        {/* Recent Alerts Table */}
-        <div className="bg-cyber-card border border-slate-800 rounded-xl p-6 shadow-lg lg:col-span-2">
-          <div className="flex justify-between items-center mb-6">
-            <h2 className="text-lg font-bold text-white">Recent Security Alerts</h2>
-            <button className="text-sm text-cyber-cyan hover:text-white transition-colors">View All</button>
-          </div>
-          <div className="overflow-x-auto">
-            <table className="w-full text-left text-sm whitespace-nowrap">
-              <thead>
-                <tr className="border-b border-slate-800 text-slate-400">
-                  <th className="pb-3 font-medium">Severity</th>
-                  <th className="pb-3 font-medium">Alert</th>
-                  <th className="pb-3 font-medium">Affected Asset</th>
-                  <th className="pb-3 font-medium">Time / Risk</th>
-                  <th className="pb-3 font-medium text-right">Actions</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-slate-800/50">
-                {recentAlerts.map((alert) => (
-                  <tr key={alert.id} className="hover:bg-slate-800/20 transition-colors">
-                    <td className="py-4">
-                      <span className={cn(
-                        "px-2.5 py-1 rounded-md text-xs font-semibold uppercase tracking-wider",
-                        alert.severity === 'Critical' ? "bg-status-critical/10 text-status-critical border border-status-critical/20" :
-                        alert.severity === 'High' ? "bg-status-high/10 text-status-high border border-status-high/20" :
-                        "bg-status-medium/10 text-status-medium border border-status-medium/20"
-                      )}>
-                        {alert.severity}
-                      </span>
-                    </td>
-                    <td className="py-4 font-medium text-slate-200">{alert.alert}</td>
-                    <td className="py-4 text-slate-400">{alert.asset}</td>
-                    <td className="py-4">
-                      <div className="flex flex-col">
-                        <span className="text-slate-300">{alert.time}</span>
-                        <span className="text-xs text-slate-500">Risk: {alert.riskScore}%</span>
-                      </div>
-                    </td>
-                    <td className="py-4 text-right">
-                      <div className="flex items-center justify-end gap-2">
-                        <button className="px-3 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-medium rounded transition-colors">Details</button>
-                        <button className="px-3 py-1.5 bg-cyber-blue/20 hover:bg-cyber-blue/40 text-cyber-cyan border border-cyber-blue/30 text-xs font-medium rounded transition-colors">Investigate</button>
-                      </div>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        </div>
-
-        {/* Live System Status & Trend */}
-        <div className="flex flex-col gap-6 lg:col-span-1">
-          
-          <div className="bg-cyber-card border border-slate-800 rounded-xl p-6 shadow-lg">
-            <h2 className="text-lg font-bold text-white mb-6">Attack Detection Trend</h2>
-            <div className="h-48 w-full">
-              <ResponsiveContainer width="100%" height="100%">
-                <BarChart data={threatDetectionData} margin={{ top: 0, right: 0, left: -20, bottom: 0 }}>
-                  <CartesianGrid strokeDasharray="3 3" stroke="#1e293b" vertical={false} />
-                  <XAxis dataKey="day" stroke="#64748b" fontSize={10} tickLine={false} axisLine={false} />
-                  <YAxis stroke="#64748b" fontSize={10} tickLine={false} axisLine={false} />
-                  <Tooltip 
-                    cursor={{fill: '#1e293b', opacity: 0.4}}
-                    contentStyle={{ backgroundColor: '#0f172a', borderColor: '#1e293b', borderRadius: '8px' }}
-                    itemStyle={{ fontSize: '12px' }}
-                  />
-                  <Legend iconType="circle" wrapperStyle={{ fontSize: '12px', color: '#94a3b8' }} />
-                  <Bar dataKey="detected" name="Detected" fill="#f97316" radius={[4, 4, 0, 0]} barSize={8} />
-                  <Bar dataKey="prevented" name="Prevented" fill="#10b981" radius={[4, 4, 0, 0]} barSize={8} />
-                </BarChart>
-              </ResponsiveContainer>
-            </div>
-          </div>
-
-          <div className="bg-cyber-card border border-slate-800 rounded-xl p-6 shadow-lg flex-1">
-            <h2 className="text-lg font-bold text-white mb-4">Live System Status</h2>
-            <div className="space-y-4">
-              {[
-                { name: 'Identity Security', status: 'Operational', color: 'bg-status-safe' },
-                { name: 'Network Monitoring', status: 'Operational', color: 'bg-status-safe' },
-                { name: 'Endpoint Protection', status: 'Operational', color: 'bg-status-safe' },
-                { name: 'AI Detection Engine', status: 'Active', color: 'bg-cyber-cyan' },
-                { name: 'Threat Intelligence', status: 'Connected', color: 'bg-cyber-cyan' },
-              ].map((sys, idx) => (
-                <div key={idx} className="flex justify-between items-center p-3 bg-cyber-darker rounded-lg border border-slate-800/50">
-                  <span className="text-sm text-slate-300 font-medium">{sys.name}</span>
-                  <div className="flex items-center gap-2">
-                    <span className={cn("w-2 h-2 rounded-full shadow-[0_0_8px_rgba(0,0,0,0.5)]", sys.color, `shadow-${sys.color.replace('bg-', '')}`)}></span>
-                    <span className="text-xs text-slate-400">{sys.status}</span>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-
-        </div>
-
+              
+              <h3 className="text-2xl font-extrabold mb-4 relative z-20 tracking-tight" style={{ color: '#ffffff', textShadow: '0 2px 10px rgba(0,0,0,0.8)', opacity: 1 }}>{mod.title}</h3>
+              <p className="text-base leading-relaxed relative z-20 max-w-[250px] font-medium" style={{ color: '#f1f5f9', opacity: 1 }}>{mod.description}</p>
+            </Link>
+          );
+        })}
       </div>
 
     </div>

@@ -4,7 +4,7 @@ import {
   Shield, AlertTriangle, Cpu, Network,
   ChevronDown, ChevronUp, Clock, Smartphone,
   Download, FileWarning, Fingerprint, Info, CheckCircle2,
-  Lock, Database, ArrowDown, GitMerge
+  Lock, Database, ArrowDown, GitMerge, Globe
 } from 'lucide-react';
 import { cn } from '../../utils/cn';
 
@@ -116,12 +116,18 @@ export default function SecurityTestingLab() {
   const [submittedData, setSubmittedData] = useState<any>(null);
 
   const [formData, setFormData] = useState({
+    username: 'john.doe',
     loginTime: '02:15',
-    failedLogins: 5,
-    deviceStatus: 'unknown',
-    downloadMb: 4500,
-    antivirusStatus: 'disabled',
-    sensitiveAccess: 'yes',
+    failedLoginCount: 5,
+    deviceType: 'unknown',
+    knownDevice: 'false',
+    ipAddress: '192.168.1.105',
+    country: 'Russia',
+    fileAccessed: '/etc/passwd',
+    downloadSizeMB: 4500,
+    usbConnected: 'true',
+    vpnUsed: 'false',
+    timestamp: new Date().toISOString().slice(0, 16),
   });
 
   /* ── Form helpers ──────────────────────────────────────────────── */
@@ -132,32 +138,50 @@ export default function SecurityTestingLab() {
 
   const loadNormal = () =>
     setFormData({
-      loginTime: '10:00',
-      failedLogins: 0,
-      deviceStatus: 'known',
-      downloadMb: 200,
-      antivirusStatus: 'active',
-      sensitiveAccess: 'no',
+      username: 'alice.smith',
+      loginTime: '09:30',
+      failedLoginCount: 0,
+      deviceType: 'laptop',
+      knownDevice: 'true',
+      ipAddress: '10.0.0.42',
+      country: 'United States',
+      fileAccessed: '',
+      downloadSizeMB: 150,
+      usbConnected: 'false',
+      vpnUsed: 'false',
+      timestamp: new Date().toISOString().slice(0, 16),
     });
 
   const loadSuspicious = () =>
     setFormData({
+      username: 'bob.hacker',
       loginTime: '02:00',
-      failedLogins: 15,
-      deviceStatus: 'unknown',
-      downloadMb: 15000,
-      antivirusStatus: 'disabled',
-      sensitiveAccess: 'yes',
+      failedLoginCount: 18,
+      deviceType: 'unknown',
+      knownDevice: 'false',
+      ipAddress: '45.33.32.156',
+      country: 'Russia',
+      fileAccessed: '/var/db/credentials.db',
+      downloadSizeMB: 15000,
+      usbConnected: 'true',
+      vpnUsed: 'true',
+      timestamp: new Date().toISOString().slice(0, 16),
     });
 
   const clearForm = () => {
     setFormData({
+      username: '',
       loginTime: '',
-      failedLogins: 0,
-      deviceStatus: 'known',
-      downloadMb: 0,
-      antivirusStatus: 'active',
-      sensitiveAccess: 'no',
+      failedLoginCount: 0,
+      deviceType: 'laptop',
+      knownDevice: 'true',
+      ipAddress: '',
+      country: '',
+      fileAccessed: '',
+      downloadSizeMB: 0,
+      usbConnected: 'false',
+      vpnUsed: 'false',
+      timestamp: new Date().toISOString().slice(0, 16),
     });
     setShowResult(false);
     setAnalysisData(null);
@@ -183,39 +207,62 @@ export default function SecurityTestingLab() {
 
     setSubmittedData({ ...formData });
 
-    const loginHour = parseInt(formData.loginTime.split(':')[0], 10) || 0;
-    const failedLogins = parseInt(String(formData.failedLogins), 10) || 0;
-    const knownDevice = formData.deviceStatus === 'known' ? 1 : 0;
-    const downloadMb = parseFloat(String(formData.downloadMb)) || 0;
-    const antivirusActive = formData.antivirusStatus === 'active' ? 1 : 0;
-    const sensitiveFileAccess = formData.sensitiveAccess === 'yes' ? 1 : 0;
-
+    // Build the new 12-field payload for the Node.js API
     const payload = {
-      login_hour: loginHour,
-      failed_logins: failedLogins,
-      known_device: knownDevice,
-      download_mb: downloadMb,
-      sensitive_file_access: sensitiveFileAccess,
-      antivirus_active: antivirusActive,
+      username:         formData.username.trim() || 'anonymous',
+      loginTime:        formData.loginTime,
+      failedLoginCount: Number(formData.failedLoginCount) || 0,
+      deviceType:       formData.deviceType,
+      knownDevice:      formData.knownDevice === 'true',
+      ipAddress:        formData.ipAddress.trim() || '0.0.0.0',
+      country:          formData.country.trim() || 'Unknown',
+      fileAccessed:     formData.fileAccessed.trim(),
+      downloadSizeMB:   Number(formData.downloadSizeMB) || 0,
+      usbConnected:     formData.usbConnected === 'true',
+      vpnUsed:          formData.vpnUsed === 'true',
+      timestamp:        formData.timestamp ? new Date(formData.timestamp).toISOString() : new Date().toISOString(),
     };
 
     try {
-      const [response] = await Promise.all([
-        fetch('http://127.0.0.1:8000/api/analyze', {
+      // Try Node.js Express server first (port 3001), fallback to FastAPI (port 8000)
+      const NODE_API = 'http://localhost:3001/api/security-lab/simulate';
+      const FASTAPI   = 'http://127.0.0.1:8000/api/analyze';
+
+      let response: Response | null = null;
+      let usedEndpoint = '';
+
+      const [nodeResp] = await Promise.allSettled([
+        fetch(NODE_API, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(payload),
         }),
-        runStages(),
       ]);
 
-      if (!response.ok) throw new Error(`API Error: ${response.status} ${response.statusText}`);
+      if (nodeResp.status === 'fulfilled' && nodeResp.value.ok) {
+        response = nodeResp.value;
+        usedEndpoint = 'Node.js';
+      } else {
+        // Fallback to FastAPI
+        response = await fetch(FASTAPI, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload),
+        });
+        usedEndpoint = 'FastAPI';
+      }
+
+      await runStages();
+
+      if (!response || !response.ok)
+        throw new Error(`API Error: ${response?.status} ${response?.statusText}`);
 
       const data = await response.json();
+      console.log(`[SecurityLab] Result from ${usedEndpoint}:`, data);
       setAnalysisData(data);
       setShowResult(true);
     } catch (err: any) {
-      setError(err.message || 'Failed to connect to backend. Is FastAPI running?');
+      setError(err.message || 'Failed to connect to backend. Start the Node.js server: cd security-lab-server && npm install && npm start');
     } finally {
       setAnalyzing(false);
     }
@@ -337,84 +384,124 @@ export default function SecurityTestingLab() {
             </div>
 
             <form onSubmit={handleAnalyze} className="space-y-4">
-              {/* Login Time + Failed Logins */}
+
+              {/* Row 1: Username + Login Time */}
               <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-1.5">
+                  <label className="lab-label">
+                    <Fingerprint className="w-3 h-3" /> Username
+                  </label>
+                  <input required name="username" value={formData.username} onChange={handleInputChange}
+                    type="text" placeholder="john.doe" className="lab-input" />
+                </div>
                 <div className="space-y-1.5">
                   <label className="lab-label">
                     <Clock className="w-3 h-3" /> Login Time
                   </label>
-                  <input
-                    required
-                    name="loginTime"
-                    value={formData.loginTime}
-                    onChange={handleInputChange}
-                    type="time"
-                    className="lab-input"
-                  />
-                </div>
-                <div className="space-y-1.5">
-                  <label className="lab-label">
-                    <ShieldAlert className="w-3 h-3" /> Failed Logins
-                  </label>
-                  <input
-                    required
-                    name="failedLogins"
-                    value={formData.failedLogins}
-                    onChange={handleInputChange}
-                    type="number"
-                    min="0"
-                    className="lab-input"
-                  />
+                  <input required name="loginTime" value={formData.loginTime} onChange={handleInputChange}
+                    type="time" className="lab-input" />
                 </div>
               </div>
 
-              {/* Device + Antivirus */}
+              {/* Row 2: Failed Login Count + Device Type */}
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-1.5">
                   <label className="lab-label">
-                    <Smartphone className="w-3 h-3" /> Device
+                    <ShieldAlert className="w-3 h-3" /> Failed Login Count
                   </label>
-                  <select name="deviceStatus" value={formData.deviceStatus} onChange={handleInputChange} className="lab-input">
-                    <option value="known">Known Device</option>
-                    <option value="unknown">Unknown Device</option>
-                  </select>
+                  <input required name="failedLoginCount" value={formData.failedLoginCount}
+                    onChange={handleInputChange} type="number" min="0" className="lab-input" />
                 </div>
                 <div className="space-y-1.5">
                   <label className="lab-label">
-                    <Shield className="w-3 h-3" /> Antivirus
+                    <Smartphone className="w-3 h-3" /> Device Type
                   </label>
-                  <select name="antivirusStatus" value={formData.antivirusStatus} onChange={handleInputChange} className="lab-input">
-                    <option value="active">Active</option>
-                    <option value="disabled">Disabled</option>
+                  <select name="deviceType" value={formData.deviceType} onChange={handleInputChange} className="lab-input">
+                    <option value="desktop">Desktop</option>
+                    <option value="laptop">Laptop</option>
+                    <option value="mobile">Mobile</option>
+                    <option value="tablet">Tablet</option>
+                    <option value="server">Server</option>
+                    <option value="unknown">Unknown</option>
                   </select>
                 </div>
               </div>
 
-              {/* Download + Sensitive Files */}
+              {/* Row 3: Known Device + IP Address */}
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-1.5">
                   <label className="lab-label">
-                    <Download className="w-3 h-3" /> Download (MB)
+                    <Shield className="w-3 h-3" /> Known Device
                   </label>
-                  <input
-                    required
-                    name="downloadMb"
-                    value={formData.downloadMb}
-                    onChange={handleInputChange}
-                    type="number"
-                    min="0"
-                    step="0.1"
-                    className="lab-input"
-                  />
+                  <select name="knownDevice" value={formData.knownDevice} onChange={handleInputChange} className="lab-input">
+                    <option value="true">Yes — Recognised</option>
+                    <option value="false">No — Unknown</option>
+                  </select>
                 </div>
                 <div className="space-y-1.5">
                   <label className="lab-label">
-                    <Lock className="w-3 h-3" /> Sensitive Files
+                    <Network className="w-3 h-3" /> IP Address
                   </label>
-                  <select name="sensitiveAccess" value={formData.sensitiveAccess} onChange={handleInputChange} className="lab-input">
-                    <option value="no">No</option>
-                    <option value="yes">Yes</option>
+                  <input required name="ipAddress" value={formData.ipAddress} onChange={handleInputChange}
+                    type="text" placeholder="192.168.1.1" className="lab-input" />
+                </div>
+              </div>
+
+              {/* Row 4: Country + File Accessed */}
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-1.5">
+                  <label className="lab-label">
+                    <Globe className="w-3 h-3" /> Country
+                  </label>
+                  <input required name="country" value={formData.country} onChange={handleInputChange}
+                    type="text" placeholder="United States" className="lab-input" />
+                </div>
+                <div className="space-y-1.5">
+                  <label className="lab-label">
+                    <FileWarning className="w-3 h-3" /> File Accessed
+                  </label>
+                  <input name="fileAccessed" value={formData.fileAccessed} onChange={handleInputChange}
+                    type="text" placeholder="/etc/passwd (optional)" className="lab-input" />
+                </div>
+              </div>
+
+              {/* Row 5: Download Size + USB Connected */}
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-1.5">
+                  <label className="lab-label">
+                    <Download className="w-3 h-3" /> Download Size (MB)
+                  </label>
+                  <input required name="downloadSizeMB" value={formData.downloadSizeMB}
+                    onChange={handleInputChange} type="number" min="0" step="0.1" className="lab-input" />
+                </div>
+                <div className="space-y-1.5">
+                  <label className="lab-label">
+                    <ArrowDown className="w-3 h-3" /> USB Connected
+                  </label>
+                  <select name="usbConnected" value={formData.usbConnected} onChange={handleInputChange} className="lab-input">
+                    <option value="false">No</option>
+                    <option value="true">Yes</option>
                   </select>
+                </div>
+              </div>
+
+              {/* Row 6: VPN Used + Timestamp */}
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-1.5">
+                  <label className="lab-label">
+                    <Lock className="w-3 h-3" /> VPN Used
+                  </label>
+                  <select name="vpnUsed" value={formData.vpnUsed} onChange={handleInputChange} className="lab-input">
+                    <option value="false">No</option>
+                    <option value="true">Yes</option>
+                  </select>
+                </div>
+                <div className="space-y-1.5">
+                  <label className="lab-label">
+                    <Clock className="w-3 h-3" /> Timestamp
+                  </label>
+                  <input name="timestamp" value={formData.timestamp} onChange={handleInputChange}
+                    type="datetime-local" className="lab-input" />
                 </div>
               </div>
 

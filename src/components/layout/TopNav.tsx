@@ -1,49 +1,32 @@
-import { Bell, Search, AlertTriangle, ShieldCheck } from "lucide-react";
+import { Bell, ShieldAlert } from "lucide-react";
 import { Link } from "react-router-dom";
 
 export function TopNav() {
   return (
-    <header className="h-16 bg-white border-b border-slate-200 flex items-center justify-between px-6 sticky top-0 z-10 shadow-sm">
+    <header className="h-16 border-b border-slate-900/50 flex items-center justify-between px-8 sticky top-0 z-10 shadow-sm backdrop-blur-xl" style={{ background: 'rgba(8,15,20,0.75)' }}>
       
-      {/* Search Bar */}
-      <div className="flex-1 max-w-xl">
-        <div className="relative">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
-          <input 
-            type="text" 
-            placeholder="Search IP, Hash, Asset, or Threat..." 
-            className="w-full bg-slate-100 border border-slate-200 rounded-md pl-10 pr-4 py-2 text-sm text-slate-700 focus:outline-none focus:border-cyber-blue transition-colors"
-          />
+      {/* Logo Section (Matches Homepage) */}
+      <div className="flex items-center gap-3">
+        <div className="p-2 bg-emerald-500/10 rounded-lg">
+          <ShieldAlert className="w-6 h-6 text-emerald-300" />
+        </div>
+        <div>
+          <span className="font-bold text-lg tracking-tight" style={{ color: '#ffffff', opacity: 1 }}>CyberShield AI</span>
         </div>
       </div>
 
       {/* Right Controls */}
       <div className="flex items-center gap-6">
         
-        {/* Live Monitoring Indicator */}
-        <div className="flex items-center gap-2">
-          <span className="relative flex h-3 w-3">
-            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-status-safe opacity-75"></span>
-            <span className="relative inline-flex rounded-full h-3 w-3 bg-status-safe"></span>
-          </span>
-          <span className="text-xs text-slate-600 font-medium">Live Monitoring Active</span>
-        </div>
-
-        {/* Current Threat Level */}
-        <div className="flex items-center gap-2 bg-status-high/10 border border-status-high/20 px-3 py-1.5 rounded-md">
-          <AlertTriangle className="w-4 h-4 text-status-high" />
-          <span className="text-xs font-bold text-status-high tracking-wider">THREAT LEVEL: HIGH</span>
-        </div>
-
-        <div className="h-6 w-px bg-cyber-card"></div>
-
         {/* Notifications */}
-        <button className="relative p-2 text-slate-500 hover:text-slate-800 transition-colors rounded-full hover:bg-slate-100">
+        <button className="relative p-2 text-slate-400 hover:text-emerald-300 transition-colors rounded-full hover:bg-emerald-500/10">
           <Bell className="w-5 h-5" />
-          <span className="absolute top-1 right-1 w-2.5 h-2.5 bg-status-critical rounded-full border border-white"></span>
+          <span className="absolute top-1.5 right-1.5 w-2 h-2 bg-status-critical rounded-full border-2 border-[#080f14]"></span>
         </button>
 
-        {/* Admin Profile */}
+        <div className="h-6 w-px bg-slate-800"></div>
+
+        {/* User Profile (Matches Homepage) */}
         <Link to="/dashboard/profile" className="w-8 h-8 rounded-full bg-gradient-to-tr from-cyber-blue to-cyber-cyan p-0.5 shadow-lg shadow-cyber-cyan/20 block hover:scale-105 transition-transform">
           <div className="w-full h-full bg-slate-50 rounded-full flex items-center justify-center">
             <span className="text-sm font-bold text-cyber-blue">B</span>

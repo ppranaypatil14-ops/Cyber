@@ -229,7 +229,7 @@ export default function HomePage() {
               <ShieldAlert className="w-6 h-6 text-emerald-300" />
             </div>
             <div>
-              <span className="font-bold text-lg text-white tracking-tight">CyberShield <span className="text-emerald-300">AI</span></span>
+              <span className="font-bold text-lg tracking-tight" style={{ color: '#ffffff', opacity: 1 }}>CyberShield AI</span>
             </div>
           </div>
           <div className="hidden md:flex items-center gap-8">
