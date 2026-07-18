@@ -1,22 +1,34 @@
 import { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { HelpCircle } from 'lucide-react';
+import { signInWithEmailAndPassword } from 'firebase/auth';
+import { auth } from '../../firebase';
+import { useAuth } from '../../contexts/AuthContext';
 
 export default function Login() {
   const navigate = useNavigate();
+  const { user } = useAuth();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [error, setError] = useState('');
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    if (localStorage.getItem('isAuthenticated') === 'true') {
-      navigate('/dashboard');
-    }
-  }, [navigate]);
+    if (user) navigate('/');
+  }, [user, navigate]);
 
-  const handleLogin = (e: React.FormEvent) => {
+  const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
-    localStorage.setItem('isAuthenticated', 'true');
-    navigate('/dashboard');
+    setError('');
+    setLoading(true);
+    try {
+      await signInWithEmailAndPassword(auth, email, password);
+      navigate('/');
+    } catch (err: any) {
+      setError('Invalid email or password. Please try again.');
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -76,11 +88,18 @@ export default function Login() {
               />
             </div>
 
+            {error && (
+              <div className="text-sm text-red-600 bg-red-50 border border-red-200 rounded-md px-4 py-2.5">
+                {error}
+              </div>
+            )}
+
             <button
               type="submit"
-              className="w-full bg-[#0052CC] hover:bg-[#0047b3] text-white font-medium py-2.5 rounded-md transition-colors mt-2"
+              disabled={loading}
+              className="w-full bg-[#0052CC] hover:bg-[#0047b3] disabled:opacity-60 text-white font-medium py-2.5 rounded-md transition-colors mt-2"
             >
-              Login
+              {loading ? 'Signing in...' : 'Login'}
             </button>
           </form>
 

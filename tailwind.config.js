@@ -8,12 +8,12 @@ export default {
     extend: {
       colors: {
         cyber: {
-          dark: '#f8fafc',
-          darker: '#e0f2fe',
-          card: '#eff6ff',
-          blue: '#2563eb',
-          cyan: '#0ea5e9',
-          accent: '#3b82f6'
+          dark: '#0a0f1c',
+          darker: '#03050a',
+          card: '#111a2d',
+          blue: '#3b82f6',
+          cyan: '#06b6d4',
+          accent: '#0ea5e9'
         },
         status: {
           safe: '#10b981',

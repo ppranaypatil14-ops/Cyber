@@ -6,48 +6,7 @@
 
 @layer base {
   body {
-    @apply bg-cyber-dark text-slate-900 font-sans antialiased;
-  }
-
-  .bg-cyber-card,
-  .bg-cyber-darker,
-  .bg-cyber-dark {
-    color: #0f172a;
-  }
-
-  .bg-cyber-card.text-white,
-  .bg-cyber-card .text-white,
-  .bg-cyber-darker.text-white,
-  .bg-cyber-darker .text-white,
-  .bg-cyber-dark.text-white,
-  .bg-cyber-dark .text-white,
-  .bg-slate-800.text-white,
-  .bg-slate-800 .text-white,
-  .bg-slate-700.text-white,
-  .bg-slate-700 .text-white {
-    color: #0f172a !important;
-  }
-
-  .bg-cyber-card {
-    background-color: #eff6ff !important;
-  }
-  .bg-cyber-darker {
-    background-color: #dbeafe !important;
-  }
-  .bg-cyber-dark {
-    background-color: #f8fafc !important;
-  }
-  .bg-slate-800 {
-    background-color: #cbd5e1 !important;
-  }
-  .bg-slate-700 {
-    background-color: #dbeafe !important;
-  }
-  .border-slate-800 {
-    border-color: #cbd5e1 !important;
-  }
-  .border-slate-700 {
-    border-color: #dbeafe !important;
+    @apply bg-cyber-dark text-slate-200 font-sans antialiased;
   }
 }
 
@@ -57,14 +16,14 @@
   height: 6px;
 }
 ::-webkit-scrollbar-track {
-  background: #dbeafe;
+  background: #0f172a;
 }
 ::-webkit-scrollbar-thumb {
-  background: #93c5fd;
+  background: #334155;
   border-radius: 9999px;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: #60a5fa;
+  background: #475569;
 }
 
 /* ── Testing Lab ─────────────────────────────────────────── */

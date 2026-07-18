@@ -1,7 +1,13 @@
 import { Bell, ShieldAlert } from "lucide-react";
 import { Link } from "react-router-dom";
+import { useAuth } from "../../contexts/AuthContext";
 
 export function TopNav() {
+  const { user } = useAuth();
+
+  // Get the first letter of the display name or email
+  const initial = (user?.displayName || user?.email || 'U')[0].toUpperCase();
+
   return (
     <header className="h-16 border-b border-slate-900/50 flex items-center justify-between px-8 sticky top-0 z-10 shadow-sm backdrop-blur-xl" style={{ background: 'rgba(8,15,20,0.75)' }}>
       
@@ -26,10 +32,10 @@ export function TopNav() {
 
         <div className="h-6 w-px bg-slate-800"></div>
 
-        {/* User Profile (Matches Homepage) */}
+        {/* User Profile — shows real initial */}
         <Link to="/dashboard/profile" className="w-8 h-8 rounded-full bg-gradient-to-tr from-cyber-blue to-cyber-cyan p-0.5 shadow-lg shadow-cyber-cyan/20 block hover:scale-105 transition-transform">
           <div className="w-full h-full bg-slate-50 rounded-full flex items-center justify-center">
-            <span className="text-sm font-bold text-cyber-blue">B</span>
+            <span className="text-sm font-bold text-cyber-blue">{initial}</span>
           </div>
         </Link>
 

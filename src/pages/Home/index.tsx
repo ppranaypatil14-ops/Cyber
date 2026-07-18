@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
+import { useAuth } from '../../contexts/AuthContext';
 import {
   ShieldAlert,
   Bot,
@@ -210,7 +211,7 @@ function InsightStat({ label, value, suffix, desc }: { label: string, value: num
 export default function HomePage() {
   const [mousePos, setMousePos] = useState({ x: 0, y: 0 });
   const liveThreats = useLiveThreats(5);
-  const isAuthenticated = localStorage.getItem('isAuthenticated') === 'true';
+  const { user } = useAuth();
 
   useEffect(() => {
     const handler = (e: MouseEvent) => setMousePos({ x: e.clientX, y: e.clientY });
@@ -239,10 +240,10 @@ export default function HomePage() {
             <a href="#capabilities" className="text-sm text-slate-300 hover:text-white transition-colors">Capabilities</a>
           </div>
           <div className="flex items-center gap-4">
-            {isAuthenticated ? (
+            {user ? (
               <Link to="/dashboard/profile" className="w-8 h-8 rounded-full bg-gradient-to-tr from-cyber-blue to-cyber-cyan p-0.5 shadow-lg shadow-cyber-cyan/20 block hover:scale-105 transition-transform">
                 <div className="w-full h-full bg-slate-50 rounded-full flex items-center justify-center">
-                  <span className="text-sm font-bold text-cyber-blue">B</span>
+                  <span className="text-sm font-bold text-cyber-blue">{(user.displayName || user.email || 'U')[0].toUpperCase()}</span>
                 </div>
               </Link>
             ) : (
