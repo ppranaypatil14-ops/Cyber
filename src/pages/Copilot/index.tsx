@@ -12,7 +12,7 @@ const suggestions = [
 
 export default function Copilot() {
   const [messages, setMessages] = useState([
-    { role: 'assistant', content: "Hello! I'm CyberShield AI Copilot. I'm actively monitoring your environment. How can I assist you with your security operations today?" }
+    { role: 'assistant', content: "Hello! I'm Raksha, your AI-powered security assistant. I'm actively monitoring your environment. How can I help you today?" }
   ]);
   const [input, setInput] = useState('');
   const [isTyping, setIsTyping] = useState(false);
@@ -194,7 +194,7 @@ export default function Copilot() {
               type="text"
               value={input}
               onChange={(e) => setInput(e.target.value)}
-              placeholder="Ask CyberShield AI about your security environment..."
+              placeholder="Ask Raksha about your security environment..."
               className="w-full bg-[#05130e] border border-emerald-500/20 rounded-xl pl-5 pr-14 py-3.5 text-sm text-slate-100 placeholder-slate-500 focus:outline-none focus:border-emerald-400 focus:ring-1 focus:ring-emerald-400/50 transition-all shadow-inner"
             />
             <button

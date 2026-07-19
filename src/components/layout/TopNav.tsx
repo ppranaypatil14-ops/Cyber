@@ -9,16 +9,11 @@ export function TopNav() {
   const initial = (user?.displayName || user?.email || 'U')[0].toUpperCase();
 
   return (
-    <header className="h-16 border-b border-slate-900/50 flex items-center justify-between px-8 sticky top-0 z-10 shadow-sm backdrop-blur-xl" style={{ background: 'rgba(8,15,20,0.75)' }}>
+    <header className="h-20 border-b border-slate-900/50 flex items-center justify-between px-8 sticky top-0 z-10 shadow-sm backdrop-blur-xl" style={{ background: 'rgba(8,15,20,0.75)' }}>
       
-      {/* Logo Section (Matches Homepage) */}
-      <div className="flex items-center gap-3">
-        <div className="p-2 bg-emerald-500/10 rounded-lg">
-          <ShieldAlert className="w-6 h-6 text-emerald-300" />
-        </div>
-        <div>
-          <span className="font-bold text-lg tracking-tight" style={{ color: '#ffffff', opacity: 1 }}>CyberShield AI</span>
-        </div>
+      {/* Logo Section */}
+      <div className="flex items-center" style={{background:'#000'}}>
+        <img src="/raksha-logo.png" alt="Raksha" className="h-12 w-auto" />
       </div>
 
       {/* Right Controls */}

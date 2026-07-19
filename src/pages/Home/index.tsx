@@ -224,14 +224,9 @@ export default function HomePage() {
 
       {/* ─── NAVIGATION ─── */}
       <nav className="fixed top-0 left-0 right-0 z-50 backdrop-blur-xl border-b border-slate-900/30 shadow-sm" style={{ background: 'rgba(8,15,20,0.75)' }}>
-        <div className="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <div className="p-2 bg-emerald-500/10 rounded-lg">
-              <ShieldAlert className="w-6 h-6 text-emerald-300" />
-            </div>
-            <div>
-              <span className="font-bold text-lg tracking-tight" style={{ color: '#ffffff', opacity: 1 }}>CyberShield AI</span>
-            </div>
+        <div className="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
+          <div className="flex items-center" style={{background:'#000'}}>
+            <img src="/raksha-logo.png" alt="Raksha" className="h-12 w-auto" />
           </div>
           <div className="hidden md:flex items-center gap-8">
             <a href="#features" className="text-sm text-slate-300 hover:text-white transition-colors">Features</a>
@@ -483,7 +478,7 @@ export default function HomePage() {
               Request a Live Demo
             </Link>
             <div className="text-sm text-slate-500 text-center lg:text-right">
-              <p>© 2026 CyberShield AI</p>
+              <p>© 2026 Raksha</p>
               <p className="mt-2">Built for urgent security operations.</p>
             </div>
           </div>

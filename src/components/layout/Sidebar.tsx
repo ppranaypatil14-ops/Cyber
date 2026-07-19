@@ -28,14 +28,8 @@ export function Sidebar() {
   return (
     <div className="w-64 h-screen bg-white border-r border-slate-200 flex flex-col fixed left-0 top-0 shadow-sm">
       {/* Logo — click to go Home */}
-      <Link to="/" className="p-6 flex items-center gap-3 hover:bg-slate-50 transition-colors group">
-        <div className="p-2 bg-cyber-blue/10 rounded-lg group-hover:bg-cyber-blue/20 transition-colors">
-          <ShieldAlert className="w-8 h-8 text-cyber-blue" />
-        </div>
-        <div>
-          <h1 className="font-bold text-xl text-slate-900 tracking-tight">CyberShield <span className="text-cyber-blue">AI</span></h1>
-          <p className="text-xs text-slate-500">Detect. Predict. Defend.</p>
-        </div>
+      <Link to="/" className="flex items-center hover:opacity-90 transition-opacity" style={{background:'#000'}}>
+        <img src="/raksha-logo.png" alt="Raksha" className="h-14 w-full object-cover" />
       </Link>
 
       {/* Navigation */}

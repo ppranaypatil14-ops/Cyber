@@ -22,7 +22,7 @@ from app.services.risk_engine import calculate_risk
 from app.services.correlation_engine import correlate_new_event
 from app.services.investigation_summary import determine_attack_name, determine_attack_stage, gather_evidence, recommend_actions, risk_level_from_severity
 
-app = FastAPI(title="CyberShield AI")
+app = FastAPI(title="Raksha")
 
 app.add_middleware(
     CORSMiddleware,
@@ -38,7 +38,7 @@ MODEL_PATH = os.path.join(BASE_DIR, "models", "anomaly_model.joblib")
 
 @app.get("/")
 def read_root():
-    return {"message": "CyberShield AI backend is running"}
+    return {"message": "Raksha backend is running"}
 
 @app.get("/health")
 def read_health():
@@ -237,7 +237,7 @@ def copilot_chat(request: ChatRequest):
     except Exception:
         events_data = "No events recorded."
 
-    system_prompt = f"""You are CyberShield AI, a highly advanced cybersecurity Copilot and Security Operations Center (SOC) assistant.
+    system_prompt = f"""You are Raksha, a highly advanced cybersecurity Copilot and Security Operations Center (SOC) assistant.
     
     You have direct access to the live monitoring data of this network. 
     Here are the recent active incidents:
