@@ -1,9 +1,17 @@
 import os
+from dotenv import load_dotenv
 import json
 from datetime import datetime
 from fastapi import FastAPI, HTTPException, status
+from pydantic import BaseModel
+from typing import List, Optional
 import joblib
 import pandas as pd
+from google import genai
+
+# Load .env explicitly from the same directory as main.py
+env_path = os.path.join(os.path.dirname(__file__), ".env")
+load_dotenv(env_path)
 
 from fastapi.middleware.cors import CORSMiddleware
 
@@ -196,3 +204,80 @@ def get_incidents():
         inc["risk_level"] = risk_level_from_severity(inc.get("severity", ""))
     incidents.sort(key=lambda x: x.get("latest_activity_time", ""), reverse=True)
     return incidents
+
+# --- COPILOT AI ENDPOINT ---
+
+class ChatMessage(BaseModel):
+    role: str
+    content: str
+
+class ChatRequest(BaseModel):
+    messages: List[ChatMessage]
+
+@app.post("/api/copilot/chat")
+def copilot_chat(request: ChatRequest):
+    api_key = os.getenv("GEMINI_API_KEY")
+    if not api_key:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="GEMINI_API_KEY is not set in the environment variables."
+        )
+
+    # Gather context from local JSON files
+    data_dir = os.path.join(os.path.dirname(__file__), "data")
+    try:
+        with open(os.path.join(data_dir, "incidents.json"), "r") as f:
+            incidents_data = f.read()
+    except Exception:
+        incidents_data = "No incidents recorded."
+        
+    try:
+        with open(os.path.join(data_dir, "events.json"), "r") as f:
+            events_data = f.read()
+    except Exception:
+        events_data = "No events recorded."
+
+    system_prompt = f"""You are CyberShield AI, a highly advanced cybersecurity Copilot and Security Operations Center (SOC) assistant.
+    
+    You have direct access to the live monitoring data of this network. 
+    Here are the recent active incidents:
+    {incidents_data[:2000]} # Truncating to avoid overwhelming context
+    
+    Here are the recent raw security events:
+    {events_data[:2000]}
+    
+    Instructions:
+    - Answer the user's questions confidently and professionally as a senior security analyst.
+    - IMPORTANT FORMATTING RULE: NEVER output a giant wall of text. Always break your answers into short bullet points.
+    - Use clear headings and lists. 
+    - Keep sentences short, concise, and highly readable.
+    - Emphasize critical keywords using **bold** text.
+    - Keep your overall response under 150 words unless specifically asked for a detailed report.
+    """
+
+    client = genai.Client(api_key=api_key)
+    
+    # Convert chat history to Gemini format, skipping the very last user message to pass it separately
+    contents = []
+    for m in request.messages[:-1]:
+        # role in gemini is typically 'user' or 'model'
+        gemini_role = 'model' if m.role == 'assistant' else 'user'
+        contents.append({"role": gemini_role, "parts": [{"text": m.content}]})
+
+    last_user_message = request.messages[-1].content
+
+    try:
+        response = client.models.generate_content(
+            model='gemini-2.5-flash',
+            contents=contents + [{"role": "user", "parts": [{"text": last_user_message}]}],
+            config={
+                "system_instruction": system_prompt,
+                "temperature": 0.2
+            }
+        )
+        return {"reply": response.text}
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Gemini API Error: {str(e)}"
+        )
