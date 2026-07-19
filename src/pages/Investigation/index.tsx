@@ -2,8 +2,19 @@ import { useState, useEffect } from 'react';
 import { Activity, Clock, AlertTriangle, FileText, Monitor, ChevronRight, Loader2 } from 'lucide-react';
 import { cn } from '../../utils/cn';
 
+interface Incident {
+  id: string;
+  title: string;
+  risk: number;
+  status: string;
+  timeline: { time: string; desc: string; type: string }[];
+  summary: string;
+  assets: { name: string; type: string; status: string }[];
+  evidence: string[];
+}
+
 export default function AttackInvestigation() {
-  const [incident, setIncident] = useState(null);
+  const [incident, setIncident] = useState<Incident | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {

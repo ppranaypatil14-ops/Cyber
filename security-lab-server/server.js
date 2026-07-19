@@ -4,6 +4,7 @@ const multer = require('multer');
 const { v4: uuidv4 } = require('uuid');
 const path = require('path');
 const fs = require('fs');
+const csv = require('csv-parser');
 
 const app = express();
 const PORT = 3001;
@@ -257,6 +258,156 @@ function analyzeActivity(d) {
   };
 }
 
+// ── Attack Correlation Engine ──────────────────────────────────
+function AttackCorrelationEngine(logs) {
+  const ipMap = {};
+  const userMap = {};
+  
+  logs.forEach(log => {
+    // Normalize fields just like validateSimulateInput does
+    const ip = (log.ipAddress || '').trim();
+    const user = (log.username || '').trim();
+    const failedLogins = Number(log.failedLoginCount) || 0;
+    const downloadSizeMB = Number(log.downloadSizeMB) || 0;
+
+    if (ip) {
+      if (!ipMap[ip]) ipMap[ip] = { count: 0, failedLogins: 0 };
+      ipMap[ip].count++;
+      ipMap[ip].failedLogins += failedLogins;
+    }
+
+    if (user) {
+      if (!userMap[user]) userMap[user] = { count: 0, totalDownloadMB: 0 };
+      userMap[user].count++;
+      userMap[user].totalDownloadMB += downloadSizeMB;
+    }
+  });
+
+  const suspiciousIPs = Object.keys(ipMap).filter(ip => ipMap[ip].failedLogins > 15);
+  const dataExfiltrators = Object.keys(userMap).filter(u => userMap[u].totalDownloadMB > 5000);
+
+  return {
+    engine: 'Attack Correlation Engine v1.0',
+    total_logs_analyzed: logs.length,
+    suspicious_ips: suspiciousIPs.map(ip => ({ ip, details: ipMap[ip] })),
+    data_exfiltration_suspects: dataExfiltrators.map(u => ({ username: u, details: userMap[u] })),
+    correlation_score: Math.min((suspiciousIPs.length * 20) + (dataExfiltrators.length * 30), 100),
+    timestamp: new Date().toISOString()
+  };
+}
+
+// ── Attack Prediction & MITRE Mapping ──────────────────────────
+function predictAttackAndMapMitre(anomalies, correlation) {
+  const predictions = [];
+  const mitreMapping = new Set();
+
+  if (correlation.suspicious_ips.length > 0) {
+    predictions.push("High probability of distributed brute force or credential stuffing attack continuing.");
+    mitreMapping.add("T1110 - Brute Force");
+  }
+  
+  if (correlation.data_exfiltration_suspects.length > 0) {
+    predictions.push("Data exfiltration in progress. Likely to be followed by extortion or ransomware deployment.");
+    mitreMapping.add("T1048 - Exfiltration Over Alternative Protocol");
+  }
+
+  anomalies.forEach(a => {
+    if (a.input.vpnUsed) mitreMapping.add("T1133 - External Remote Services");
+    if (a.input.usbConnected) mitreMapping.add("T1052 - Exfiltration Over Physical Medium");
+    if (a.input.fileAccessed) mitreMapping.add("T1005 - Data from Local System");
+    if (a.input.deviceType === 'unknown' || a.input.deviceType === 'mobile') mitreMapping.add("T1078 - Valid Accounts");
+  });
+
+  if (mitreMapping.size === 0) {
+    predictions.push("No immediate attack progression predicted based on current benign activity.");
+  }
+
+  return {
+    predictions,
+    mitre_techniques: Array.from(mitreMapping)
+  };
+}
+
+// ── Unified Analysis Pipeline ──────────────────────────────────
+function UnifiedAnalysisPipeline(logs) {
+  // 1 & 3: AI Anomaly Detection & Risk Score Calculation
+  const logsAnalysis = logs.map(log => analyzeActivity(log));
+  
+  // 2: Attack Correlation
+  const correlation = AttackCorrelationEngine(logs);
+  const anomalies = logsAnalysis.filter(a => a.is_anomaly);
+
+  // 4 & 5: Attack Prediction & MITRE ATT&CK Mapping
+  const { predictions, mitre_techniques } = predictAttackAndMapMitre(anomalies, correlation);
+
+  // Derive Fields for Output Schema
+  let maxRisk = logsAnalysis.reduce((max, curr) => Math.max(max, curr.final_risk_score), 0);
+  let riskScore = Math.max(maxRisk, correlation.correlation_score || 0);
+
+  let attackType = "Normal Activity";
+  if (correlation.suspicious_ips.length > 0 && correlation.data_exfiltration_suspects.length > 0) {
+    attackType = "Multi-Stage Attack (Brute Force + Exfiltration)";
+  } else if (correlation.suspicious_ips.length > 0) {
+    attackType = "Brute Force / Credential Stuffing";
+  } else if (correlation.data_exfiltration_suspects.length > 0) {
+    attackType = "Data Exfiltration";
+  } else if (anomalies.length > 0) {
+    attackType = "Suspicious Anomalous Behavior";
+  }
+
+  let evidence = [];
+  anomalies.forEach(a => evidence.push(...a.reasons));
+  evidence = [...new Set(evidence)]; // Make unique
+
+  let attackTimeline = logsAnalysis.map(a => ({
+    timestamp: a.input.timestamp || a.timestamp,
+    user: a.input.username || 'unknown',
+    event: a.is_anomaly ? `Anomaly detected: ${a.reasons.join(', ')}` : 'Normal activity logged'
+  }));
+
+  let recommendedResponse = "No action required.";
+  if (riskScore >= 75) {
+    recommendedResponse = "IMMEDIATE ACTION REQUIRED: Block suspicious IPs, force password resets for affected accounts, and isolate compromised endpoints.";
+  } else if (riskScore >= 50) {
+    recommendedResponse = "INVESTIGATE: Temporarily restrict user access, review logs for lateral movement, and verify user identity.";
+  } else if (riskScore >= 25) {
+    recommendedResponse = "MONITOR: Increase logging on affected accounts and watch for further anomalous behavior.";
+  }
+
+  let confidencePercentage = Math.min(100, Math.round((anomalies.length / (logs.length || 1)) * 50 + (riskScore * 0.5)));
+  if (attackType !== "Normal Activity") {
+    confidencePercentage = Math.min(100, confidencePercentage + 20);
+  }
+  if (anomalies.length === 0) confidencePercentage = 95;
+
+  let simulatedActions = [];
+  if (riskScore > 85) {
+    simulatedActions = [
+      "Block IP",
+      "Lock Account",
+      "Isolate Device",
+      "Notify Security Team"
+    ];
+  }
+
+  return {
+    "Risk Score": riskScore,
+    "Attack Type": attackType,
+    "Evidence": evidence,
+    "Attack Timeline": attackTimeline,
+    "Predicted Next Action": predictions.length > 0 ? predictions.join(' ') : "None",
+    "MITRE ATT&CK Stages": mitre_techniques,
+    "Recommended Response": recommendedResponse,
+    "Confidence Percentage": `${confidencePercentage}%`,
+    "Simulated Actions": simulatedActions,
+    
+    // Internal fields for logging / compatibility
+    request_id: uuidv4(),
+    anomaly_detection: { anomalies_found: anomalies.length },
+    attack_correlation: { correlation_score: correlation.correlation_score }
+  };
+}
+
 // ── File analyser (unchanged) ──────────────────────────────────
 function analyzeFile(filePath, originalName) {
   const ext = path.extname(originalName).toLowerCase();
@@ -313,6 +464,7 @@ app.get('/', (req, res) => {
     routes: [
       'POST /api/security-lab/simulate',
       'POST /api/security-lab/upload',
+      'POST /api/security-lab/upload-logs',
       'GET  /api/security-lab/result',
       'GET  /api/security-lab/sessions',
     ],
@@ -349,7 +501,7 @@ app.post('/api/security-lab/simulate', (req, res) => {
     };
 
     // ── Analyse ───────────────────────────────────────────────
-    const result = analyzeActivity(clean);
+    const result = UnifiedAnalysisPipeline([clean]);
 
     // ── Temporarily store session (max 100) ───────────────────
     const session = {
@@ -363,7 +515,7 @@ app.post('/api/security-lab/simulate', (req, res) => {
 
     latestResult = result;
 
-    console.log(`[simulate] ${clean.username} | ${result.severity} | score:${result.final_risk_score}`);
+    console.log(`[simulate] ${clean.username} | anomalies:${result.anomaly_detection.anomalies_found} | correlation_score:${result.attack_correlation.correlation_score}`);
     return res.status(200).json(result);
 
   } catch (err) {
@@ -383,6 +535,53 @@ app.post('/api/security-lab/upload', upload.single('file'), (req, res) => {
     return res.status(200).json(result);
   } catch (err) {
     console.error('[/upload]', err);
+    return res.status(500).json({ error: 'Internal server error', message: err.message });
+  }
+});
+
+// ── POST /api/security-lab/upload-logs ────────────────────────
+app.post('/api/security-lab/upload-logs', upload.single('file'), (req, res) => {
+  try {
+    if (!req.file) return res.status(400).json({ error: 'No file uploaded. Use field name "file".' });
+
+    const ext = path.extname(req.file.originalname).toLowerCase();
+    const filePath = req.file.path;
+    const logs = [];
+
+    if (ext === '.json') {
+      const data = fs.readFileSync(filePath, 'utf8');
+      const parsed = JSON.parse(data);
+      const logArray = Array.isArray(parsed) ? parsed : [parsed];
+      logArray.forEach(row => logs.push(row));
+      
+      const pipelineResult = UnifiedAnalysisPipeline(logs);
+      latestResult = pipelineResult; // store as latest result for /result endpoint
+      fs.unlink(filePath, () => {});
+      console.log(`[upload-logs] JSON parsed. Found ${logs.length} logs.`);
+      return res.status(200).json(pipelineResult);
+
+    } else if (ext === '.csv') {
+      fs.createReadStream(filePath)
+        .pipe(csv())
+        .on('data', (data) => logs.push(data))
+        .on('end', () => {
+          const pipelineResult = UnifiedAnalysisPipeline(logs);
+          latestResult = pipelineResult; // store as latest result for /result endpoint
+          fs.unlink(filePath, () => {});
+          console.log(`[upload-logs] CSV parsed. Found ${logs.length} logs.`);
+          return res.status(200).json(pipelineResult);
+        })
+        .on('error', (err) => {
+          fs.unlink(filePath, () => {});
+          return res.status(500).json({ error: 'Failed to parse CSV', details: err.message });
+        });
+    } else {
+      fs.unlink(filePath, () => {});
+      return res.status(400).json({ error: 'Unsupported file type. Please upload .csv or .json' });
+    }
+  } catch (err) {
+    if (req.file) fs.unlink(req.file.path, () => {});
+    console.error('[/upload-logs]', err);
     return res.status(500).json({ error: 'Internal server error', message: err.message });
   }
 });
