@@ -26,6 +26,15 @@ export default function Copilot() {
     scrollToBottom();
   }, [messages, isTyping]);
 
+  useEffect(() => {
+    const initialPrompt = localStorage.getItem('copilot_initial_prompt');
+    if (initialPrompt) {
+      localStorage.removeItem('copilot_initial_prompt');
+      // A small timeout ensures state is fully mounted
+      setTimeout(() => handleSend(initialPrompt), 300);
+    }
+  }, []);
+
   const handleSend = async (text: string) => {
     if (!text.trim()) return;
 
