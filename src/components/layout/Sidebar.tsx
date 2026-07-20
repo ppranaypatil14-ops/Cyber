@@ -14,7 +14,7 @@ import {
 import { cn } from "../../utils/cn";
 
 const navItems = [
-  { name: "Overview Dashboard", path: "/dashboard", icon: LayoutDashboard },
+  { name: "Attack Correlation Dashboard", path: "/dashboard/attack-correlation", icon: LayoutDashboard },
   { name: "Live Alerts", path: "/dashboard/alerts", icon: Activity },
   { name: "Security Testing Lab", path: "/dashboard/lab", icon: FlaskConical },
   { name: "Attack Investigation", path: "/dashboard/investigation", icon: SearchCode },
