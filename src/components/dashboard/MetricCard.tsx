@@ -5,10 +5,9 @@ interface MetricCardProps {
   title: string;
   value: string | number;
   icon?: React.ReactNode;
-  colorClass?: string;
 }
 
-export const MetricCard: React.FC<MetricCardProps> = ({ title, value, icon, colorClass }) => {
+export const MetricCard: React.FC<MetricCardProps> = ({ title, value, icon }) => {
   // Determine accent color based on title
   let accentColor = 'border-emerald-500/20';
   let valueColor = 'text-white';

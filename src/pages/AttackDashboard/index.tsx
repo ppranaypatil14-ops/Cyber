@@ -30,7 +30,7 @@ export const AttackDashboard: React.FC = () => {
   );
 
   // Inject simulated data
-  const displayIncidents = [...incidents];
+  const displayIncidents = Array.isArray(incidents) ? [...incidents] : [];
   if (simulatedContained) {
     const targetIdx = displayIncidents.findIndex(i => i.id === 'INC-2026-0042' || i.title.includes('Account Compromise'));
     if (targetIdx !== -1) {
@@ -38,13 +38,13 @@ export const AttackDashboard: React.FC = () => {
     }
   }
 
-  const displayEvents = [...events];
+  const displayEvents = Array.isArray(events) ? [...events] : [];
   if (simulatedContained) {
     const now = new Date().toISOString();
     displayEvents.push(
-      { timestamp: now, type: 'action', description: 'SOC Team Notified', source: 'AI Response', severity: 'low' },
-      { timestamp: now, type: 'action', description: 'Employee Account Locked: Employee-021', source: 'AI Response', severity: 'low' },
-      { timestamp: now, type: 'action', description: 'Incident Contained: INC-2026-0042', source: 'System', severity: 'info' }
+      { timestamp: now, type: 'action', description: 'SOC Team Notified', source: 'AI Response', severity: 'low' } as any,
+      { timestamp: now, type: 'action', description: 'Employee Account Locked: Employee-021', source: 'AI Response', severity: 'low' } as any,
+      { timestamp: now, type: 'action', description: 'Incident Contained: INC-2026-0042', source: 'System', severity: 'info' } as any
     );
   }
 
@@ -57,7 +57,7 @@ export const AttackDashboard: React.FC = () => {
   const containedIncidents = displayIncidents.filter(i => i.status === 'Contained').length;
   const avgRiskScore = displayIncidents.reduce((a, b) => a + (b.risk_score || 0), 0) / (displayIncidents.length || 1);
   const latestIncidentTime = displayIncidents.reduce((latest, cur) => {
-    const curTime = new Date(cur.latest_activity_time);
+    const curTime = new Date(cur.latest_activity_time || 0);
     return curTime > latest ? curTime : latest;
   }, new Date(0));
 

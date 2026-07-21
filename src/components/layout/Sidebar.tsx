@@ -1,9 +1,7 @@
 import { NavLink, Link } from "react-router-dom";
 import { 
-  ShieldAlert, 
   LayoutDashboard, 
   Activity, 
-  FlaskConical, 
   SearchCode, 
   Network, 
   Bot, 

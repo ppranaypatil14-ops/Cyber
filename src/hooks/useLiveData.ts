@@ -1,6 +1,5 @@
 // src/hooks/useLiveData.ts
 import { useQuery } from '@tanstack/react-query';
-import axios from 'axios';
 
 export interface Incident {
   incident_id: string;
@@ -42,10 +41,13 @@ export const useLiveData = () => {
     data: incidents,
     isLoading: incidentsLoading,
     refetch: refetchIncidents,
-  } = useQuery<Incident[]>(['incidents'], async () => {
-    const { data } = await axios.get<Incident[]>('/incidents');
-    return data;
-  }, {
+  } = useQuery<Incident[]>({
+    queryKey: ['incidents'],
+    queryFn: async () => {
+      const response = await fetch('/incidents');
+      if (!response.ok) throw new Error('Failed to fetch incidents');
+      return response.json();
+    },
     refetchInterval: 5000, // 5 seconds
   });
 
@@ -53,10 +55,13 @@ export const useLiveData = () => {
     data: events,
     isLoading: eventsLoading,
     refetch: refetchEvents,
-  } = useQuery<SecurityEvent[]>(['events'], async () => {
-    const { data } = await axios.get<SecurityEvent[]>('/events');
-    return data;
-  }, {
+  } = useQuery<SecurityEvent[]>({
+    queryKey: ['events'],
+    queryFn: async () => {
+      const response = await fetch('/events');
+      if (!response.ok) throw new Error('Failed to fetch events');
+      return response.json();
+    },
     refetchInterval: 5000,
   });
 

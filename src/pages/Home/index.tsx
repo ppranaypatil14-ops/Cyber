@@ -13,8 +13,6 @@ import {
   Server,
   ShieldCheck,
   ArrowRight,
-  CheckCircle2,
-  AlertTriangle,
   Cpu,
   Fingerprint,
   Radar,
@@ -210,7 +208,7 @@ function InsightStat({ label, value, suffix, desc }: { label: string, value: num
    ═══════════════════════════════════════════════ */
 export default function HomePage() {
   const [mousePos, setMousePos] = useState({ x: 0, y: 0 });
-  const liveThreats = useLiveThreats(5);
+  useLiveThreats(5);
   const { user } = useAuth();
 
   useEffect(() => {

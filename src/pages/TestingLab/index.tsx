@@ -1,18 +1,18 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef } from 'react';
 import { jsPDF } from 'jspdf';
 import {
-  Beaker, ShieldAlert, Activity, ShieldCheck,
-  Shield, AlertTriangle, Cpu, Network,
-  Clock, Smartphone, Download, Fingerprint, 
-  Database, UploadCloud, CheckCircle2, ArrowRight,
+  Activity,
+  AlertTriangle, Cpu,
+  Clock, Smartphone, Download,
+  Database, UploadCloud, CheckCircle2,
   Zap, Check, Loader2, Sparkles, Layers, Terminal,
-  Bot, ChevronDown, ChevronRight, User, Globe, HardDrive,
-  FileCode, AlertOctagon, ArrowUpRight, Radar
+  Bot, ChevronDown, User, Globe,
+  AlertOctagon, Radar
 } from 'lucide-react';
 import { cn } from '../../utils/cn';
 
 // Circular Risk Progress Component
-function CircularRiskGauge({ score, severity }: { score: number; severity: string }) {
+function CircularRiskGauge({ score, severity: _severity }: { score: number; severity: string }) {
   const radius = 48;
   const stroke = 8;
   const normalizedRadius = radius - stroke / 2;

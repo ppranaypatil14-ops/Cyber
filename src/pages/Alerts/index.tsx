@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Search, Filter, Calendar, ShieldAlert, X, ShieldCheck, ChevronRight, Activity, Sparkles, Bot } from 'lucide-react';
+import { Search, Filter, Calendar, ShieldAlert, X, ShieldCheck, ChevronRight, Activity, Bot } from 'lucide-react';
 import { detailedAlerts } from '../../data/mockAlertsData';
 import { cn } from '../../utils/cn';
 

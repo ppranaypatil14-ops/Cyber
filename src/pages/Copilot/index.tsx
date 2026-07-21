@@ -71,8 +71,18 @@ const ExplanationCard = ({ data }: { data: any }) => {
   );
 };
 
+interface Message {
+  role: string;
+  content: string;
+  isIncident?: boolean;
+  incidentData?: any;
+  isResponseComplete?: boolean;
+  isExplanation?: boolean;
+  isAnalysis?: boolean;
+}
+
 export default function Copilot() {
-  const [messages, setMessages] = useState([
+  const [messages, setMessages] = useState<Message[]>([
     { role: 'assistant', content: "Hello! I'm Raksha, your AI-powered security assistant. I'm actively monitoring your environment. How can I help you today?" }
   ]);
   const [input, setInput] = useState('');

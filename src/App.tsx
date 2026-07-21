@@ -12,6 +12,7 @@ import Settings from "./pages/Settings";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
 import Profile from "./pages/Profile";
+import { AttackDashboard } from "./pages/AttackDashboard";
 
 function App() {
   return (
@@ -27,6 +28,7 @@ function App() {
         {/* Dashboard — wrapped with sidebar + topnav layout */}
         <Route path="/dashboard" element={<AppLayout />}>
           <Route index element={<OverviewDashboard />} />
+          <Route path="attack-correlation" element={<AttackDashboard />} />
           <Route path="alerts" element={<LiveAlerts />} />
           <Route path="lab" element={<SecurityTestingLab />} />
           <Route path="investigation" element={<AttackInvestigation />} />
