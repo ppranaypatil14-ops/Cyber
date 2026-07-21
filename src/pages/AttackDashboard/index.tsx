@@ -7,6 +7,7 @@ import { ChartsPanel } from '../../components/dashboard/ChartsPanel';
 import { FilterBar } from '../../components/dashboard/FilterBar';
 import { AiInvestigationPanel } from '../../components/dashboard/AiInvestigationPanel';
 import { ExportButtons } from '../../components/dashboard/ExportButtons';
+import { ShieldAlert, Activity, AlertTriangle, ShieldCheck, Sparkles, Loader2 } from 'lucide-react';
 
 export const AttackDashboard: React.FC = () => {
   const { incidents, events, isLoading } = useLiveData();
@@ -19,14 +20,21 @@ export const AttackDashboard: React.FC = () => {
     return () => window.removeEventListener('simulated_contained', checkContained);
   }, []);
 
-  if (isLoading) return <div className="p-8 text-white">Loading dashboard...</div>;
+  if (isLoading) return (
+    <div className="flex items-center justify-center h-[60vh]">
+      <div className="flex flex-col items-center gap-3">
+        <Loader2 className="w-8 h-8 text-emerald-400 animate-spin" />
+        <p className="text-sm text-slate-400 font-medium">Loading Dashboard...</p>
+      </div>
+    </div>
+  );
 
   // Inject simulated data
   const displayIncidents = [...incidents];
   if (simulatedContained) {
     const targetIdx = displayIncidents.findIndex(i => i.id === 'INC-2026-0042' || i.title.includes('Account Compromise'));
     if (targetIdx !== -1) {
-      displayIncidents[targetIdx] = { ...displayIncidents[targetIdx], status: 'Contained', severity: 'Info' }; // 'Info' or just keep as is, but we want it out of Critical
+      displayIncidents[targetIdx] = { ...displayIncidents[targetIdx], status: 'Contained', severity: 'Info' };
     }
   }
 
@@ -54,18 +62,39 @@ export const AttackDashboard: React.FC = () => {
   }, new Date(0));
 
   return (
-    <div className="p-6 space-y-6 bg-dark-bg min-h-screen text-white">
-      <h1 className="text-3xl font-bold">Attack Correlation Dashboard</h1>
-      <p className="text-lg opacity-80">Real-Time Correlated Cyber Incidents</p>
+    <div className="space-y-6 animate-in fade-in duration-500">
+      {/* Header */}
+      <div className="bg-[#05130e]/80 backdrop-blur-xl border border-emerald-500/15 rounded-2xl p-6 shadow-2xl">
+        <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+          <div>
+            <h1 className="text-2xl font-black text-white flex items-center gap-2">
+              <ShieldAlert className="w-6 h-6 text-emerald-400" />
+              Attack Correlation Dashboard
+              <Sparkles className="w-4 h-4 text-emerald-400 animate-pulse" />
+            </h1>
+            <p className="text-sm text-slate-400 mt-1">Real-Time Correlated Cyber Incidents & Threat Intelligence</p>
+          </div>
+          <div className="flex items-center gap-3 text-xs">
+            <div className="px-3 py-1.5 bg-[#030d09] border border-emerald-500/20 rounded-xl flex items-center gap-2">
+              <div className="w-2 h-2 rounded-full bg-emerald-400 animate-ping" />
+              <span className="text-emerald-400 font-bold">Live Monitoring</span>
+            </div>
+            <div className="px-3 py-1.5 bg-[#030d09] border border-emerald-500/20 rounded-xl flex items-center gap-2">
+              <Activity className="w-3.5 h-3.5 text-cyan-400" />
+              <span className="text-slate-300"><strong className="text-cyan-400">{totalEvents}</strong> Events</span>
+            </div>
+          </div>
+        </div>
+      </div>
 
       {/* Metric Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-4">
-        <MetricCard title="Active Incidents" value={activeIncidents} />
-        <MetricCard title="Total Security Events" value={totalEvents} />
-        <MetricCard title="Critical Incidents" value={criticalIncidents} />
-        <MetricCard title="Contained Incidents" value={containedIncidents} />
-        <MetricCard title="High Incidents" value={highIncidents} />
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+        <MetricCard title="Active Incidents" value={activeIncidents} icon={<AlertTriangle className="w-5 h-5" />} />
+        <MetricCard title="Critical Incidents" value={criticalIncidents} icon={<ShieldAlert className="w-5 h-5" />} />
+        <MetricCard title="Contained Incidents" value={containedIncidents} icon={<ShieldCheck className="w-5 h-5" />} />
+        <MetricCard title="High Incidents" value={highIncidents} icon={<Activity className="w-5 h-5" />} />
         <MetricCard title="Medium Incidents" value={mediumIncidents} />
+        <MetricCard title="Total Security Events" value={totalEvents} />
         <MetricCard title="Avg Risk Score" value={avgRiskScore.toFixed(1)} />
         <MetricCard title="Latest Incident" value={latestIncidentTime.toLocaleTimeString()} />
       </div>
