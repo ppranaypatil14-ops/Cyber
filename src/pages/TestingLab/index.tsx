@@ -5,7 +5,7 @@ import {
   Shield, AlertTriangle, Cpu, Network,
   Clock, Smartphone, Download, Fingerprint, 
   Database, UploadCloud, CheckCircle2, ArrowRight,
-  Zap, Check, Loader2, Sparkles, Layers, SendCheck
+  Zap, Check, Loader2, Sparkles, Layers
 } from 'lucide-react';
 import { cn } from '../../utils/cn';
 
