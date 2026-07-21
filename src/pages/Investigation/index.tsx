@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Activity, Clock, AlertTriangle, FileText, Monitor, ChevronRight, Loader2 } from 'lucide-react';
 import { cn } from '../../utils/cn';
 
@@ -14,6 +15,7 @@ interface Incident {
 }
 
 export default function AttackInvestigation() {
+  const navigate = useNavigate();
   const [incident, setIncident] = useState<Incident | null>(null);
   const [loading, setLoading] = useState(true);
 
@@ -22,24 +24,45 @@ export default function AttackInvestigation() {
     const fetchIncident = async () => {
       try {
         await new Promise(resolve => setTimeout(resolve, 800));
+        
+        const isContained = localStorage.getItem('simulated_contained') === 'true';
+
+        let timeline = [
+          { time: '10:01 AM', desc: 'Multiple failed login attempts detected', type: 'warning' },
+          { time: '10:03 AM', desc: 'Successful login from an unknown device', type: 'danger' },
+          { time: '10:05 AM', desc: 'Sensitive database accessed', type: 'danger' },
+          { time: '10:07 AM', desc: 'Large data transfer initiated', type: 'danger' },
+          { time: '10:08 AM', desc: 'AI detected account compromise', type: 'ai' },
+          { time: '10:09 AM', desc: 'Data exfiltration predicted', type: 'ai' },
+          { time: '10:10 AM', desc: 'Account temporarily locked', type: 'success' },
+        ];
+
+        if (isContained) {
+          timeline = [
+            ...timeline,
+            { time: '10:10 AM', desc: 'AI Response Started', type: 'ai' },
+            { time: '10:10 AM', desc: 'Account Locked', type: 'success' },
+            { time: '10:10 AM', desc: 'Unknown Device Blocked', type: 'success' },
+            { time: '10:11 AM', desc: 'Password Reset', type: 'success' },
+            { time: '10:11 AM', desc: 'Security Team Notified', type: 'success' },
+            { time: '10:11 AM', desc: 'Forensic Snapshot Created', type: 'success' },
+            { time: '10:11 AM', desc: 'Continuous Monitoring Enabled', type: 'success' },
+            { time: '10:12 AM', desc: 'Incident Successfully Contained', type: 'success' }
+          ];
+        }
+
+        const summary = "Based on behavioral analysis, a malicious actor successfully brute-forced Employee-021's credentials after multiple failed attempts. The actor then accessed the network from a previously unknown device, immediately pivoted to Server-DB-04, and initiated a large data transfer. The AI engine detected this anomalous sequence and flagged a high probability (87%) of data exfiltration. Automated containment locked the account at 10:10 AM." + (isContained ? "\n\nThe automated incident response workflow successfully contained the attack. Immediate threats have been mitigated. The incident is now ready for analyst review." : "");
+
         setIncident({
           id: 'INC-2026-0042',
           title: 'Possible Account Compromise',
           risk: 94,
-          status: 'Active Investigation',
-          timeline: [
-            { time: '10:01 AM', desc: 'Multiple failed login attempts detected', type: 'warning' },
-            { time: '10:03 AM', desc: 'Successful login from an unknown device', type: 'danger' },
-            { time: '10:05 AM', desc: 'Sensitive database accessed', type: 'danger' },
-            { time: '10:07 AM', desc: 'Large data transfer initiated', type: 'danger' },
-            { time: '10:08 AM', desc: 'AI detected account compromise', type: 'ai' },
-            { time: '10:09 AM', desc: 'Data exfiltration predicted', type: 'ai' },
-            { time: '10:10 AM', desc: 'Account temporarily locked', type: 'success' },
-          ],
-          summary: "Based on behavioral analysis, a malicious actor successfully brute-forced Employee-021's credentials after multiple failed attempts. The actor then accessed the network from a previously unknown device, immediately pivoted to Server-DB-04, and initiated a large data transfer. The AI engine detected this anomalous sequence and flagged a high probability (87%) of data exfiltration. Automated containment locked the account at 10:10 AM.",
+          status: isContained ? 'Contained' : 'Active Investigation',
+          timeline,
+          summary,
           assets: [
             { name: 'Employee-021', type: 'User Account', status: 'Locked' },
-            { name: 'Server-DB-04', type: 'Database Server', status: 'At Risk' }
+            { name: 'Server-DB-04', type: 'Database Server', status: isContained ? 'Secured' : 'At Risk' }
           ],
           evidence: [
             '15 failed logins from IP 192.168.1.45',
@@ -52,6 +75,12 @@ export default function AttackInvestigation() {
       }
     };
     fetchIncident();
+
+    const handleSimulatedContained = () => {
+      fetchIncident();
+    };
+    window.addEventListener('simulated_contained', handleSimulatedContained);
+    return () => window.removeEventListener('simulated_contained', handleSimulatedContained);
   }, []);
 
   if (loading) {
@@ -64,15 +93,43 @@ export default function AttackInvestigation() {
 
   if (!incident) return null;
 
+  const handleTakeAction = () => {
+    if (!incident) return;
+    
+    const contextData = {
+      type: "incident_handoff",
+      incident: {
+        id: incident.id,
+        employeeId: incident.assets.find(a => a.type === 'User Account')?.name || 'Unknown',
+        severity: 'Critical',
+        riskScore: incident.risk,
+        attackName: incident.title,
+        status: incident.status,
+        timeline: incident.timeline,
+        evidence: incident.evidence,
+        summary: incident.summary
+      }
+    };
+
+    localStorage.setItem('copilot_initial_prompt', JSON.stringify(contextData));
+    navigate('/dashboard/copilot');
+  };
+
   return (
     <div className="max-w-6xl mx-auto space-y-6 animate-in fade-in duration-500">
       <div className="bg-cyber-card border border-slate-800 rounded-xl p-6 shadow-lg">
         <div className="flex flex-col md:flex-row md:justify-between md:items-start gap-4">
           <div>
             <div className="flex items-center gap-3 mb-2">
-              <span className="px-2.5 py-1 bg-status-critical/10 text-status-critical border border-status-critical/20 rounded-md text-xs font-semibold uppercase tracking-wider">
-                Critical
-              </span>
+              {incident.status === 'Contained' ? (
+                <span className="px-2.5 py-1 bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 rounded-md text-xs font-semibold uppercase tracking-wider flex items-center gap-1">
+                  ✓ Contained
+                </span>
+              ) : (
+                <span className="px-2.5 py-1 bg-status-critical/10 text-status-critical border border-status-critical/20 rounded-md text-xs font-semibold uppercase tracking-wider">
+                  Critical
+                </span>
+              )}
               <span className="text-sm font-medium text-slate-400">{incident.id}</span>
             </div>
             <h1 className="text-2xl font-bold text-white mb-2">{incident.title}</h1>
@@ -83,12 +140,15 @@ export default function AttackInvestigation() {
               </span>
               <span className="flex items-center gap-1.5 text-slate-400">
                 <Activity className="w-4 h-4 text-cyber-cyan" />
-                Status: {incident.status}
+                Status: <span className={incident.status === 'Contained' ? 'text-emerald-400 font-bold' : ''}>{incident.status}</span>
               </span>
             </div>
           </div>
           <div className="flex gap-3">
-            <button className="px-4 py-2 bg-cyber-blue hover:bg-cyber-blue/80 text-white text-sm font-medium rounded-lg transition-colors">
+            <button 
+              onClick={handleTakeAction}
+              className="px-4 py-2 bg-cyber-blue hover:bg-cyber-blue/80 text-white text-sm font-medium rounded-lg transition-colors flex items-center gap-2"
+            >
               Take Action
             </button>
             <button className="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-slate-200 text-sm font-medium rounded-lg transition-colors">
@@ -105,9 +165,9 @@ export default function AttackInvestigation() {
               <Clock className="w-5 h-5 text-cyber-cyan" />
               Attack Timeline
             </h2>
-            <div className="relative pl-6 space-y-6 before:content-[''] before:absolute before:left-2 before:top-2 before:bottom-2 before:w-px before:bg-slate-800">
+            <div className="relative pl-6 space-y-6 before:content-[''] before:absolute before:left-2 before:top-2 before:bottom-2 before:w-px before:bg-slate-800 h-[500px] overflow-y-auto custom-scrollbar pr-4">
               {incident.timeline.map((event, idx) => (
-                <div key={idx} className="relative">
+                <div key={idx} className={cn("relative", incident.status === 'Contained' && idx >= 7 ? "animate-in slide-in-from-left-4 fade-in duration-500" : "")} style={{ animationDelay: `${(idx - 7) * 100}ms` }}>
                   <div className={cn(
                     "absolute -left-[29px] w-3 h-3 rounded-full border-2 border-cyber-card",
                     event.type === 'danger' ? "bg-status-critical" : 
@@ -129,7 +189,7 @@ export default function AttackInvestigation() {
               <Activity className="w-5 h-5" />
               AI Investigation Summary
             </h2>
-            <p className="text-sm text-slate-300 leading-relaxed">{incident.summary}</p>
+            <p className="text-sm text-slate-300 leading-relaxed whitespace-pre-wrap">{incident.summary}</p>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
