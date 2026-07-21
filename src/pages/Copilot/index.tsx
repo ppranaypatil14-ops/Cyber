@@ -3,6 +3,7 @@ import { Bot, User, Send, Sparkles, Activity, Zap, ShieldAlert, Lock, Ban, Key, 
 import { cn } from '../../utils/cn';
 
 const suggestions = [
+  "What are today's top cybersecurity news & real-world updates?",
   "Why is Employee-021 considered high risk?",
   "What cyberattacks were detected today?",
   "What is the predicted next attack?",
@@ -329,6 +330,10 @@ export default function Copilot() {
             Quick Actions
           </h3>
           <div className="flex flex-col gap-2">
+            <button onClick={() => handleSend("What are today's top global cybersecurity news, zero-day threats, and security headlines?")} className="text-left px-4 py-2.5 bg-emerald-500/10 hover:bg-emerald-500/20 rounded-xl text-xs text-emerald-200 hover:text-white transition-all border border-emerald-500/30 hover:border-emerald-400 flex items-center justify-between font-medium">
+              <span>Fetch Live Cyber News</span>
+              <span className="text-[10px] bg-emerald-500/30 text-emerald-300 px-1.5 py-0.5 rounded font-bold">LIVE</span>
+            </button>
             <button onClick={() => handleSend("Generate a threat report for the past 24 hours.")} className="text-left px-4 py-2.5 bg-emerald-500/5 hover:bg-emerald-500/10 rounded-xl text-xs text-slate-300 hover:text-white transition-all border border-emerald-500/10 hover:border-emerald-500/30">Generate 24h Threat Report</button>
             <button onClick={() => handleSend("Isolate Employee-021's device.")} className="text-left px-4 py-2.5 bg-emerald-500/5 hover:bg-emerald-500/10 rounded-xl text-xs text-slate-300 hover:text-white transition-all border border-emerald-500/10 hover:border-emerald-500/30">Isolate Compromised Node</button>
             <button onClick={() => handleSend("Review firewall logs for anomalies.")} className="text-left px-4 py-2.5 bg-emerald-500/5 hover:bg-emerald-500/10 rounded-xl text-xs text-slate-300 hover:text-white transition-all border border-emerald-500/10 hover:border-emerald-500/30">Review Firewall Logs</button>

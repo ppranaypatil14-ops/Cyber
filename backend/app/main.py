@@ -8,6 +8,7 @@ from typing import List, Optional
 import joblib
 import pandas as pd
 from google import genai
+from google.genai import types
 
 # Load .env explicitly from the same directory as main.py
 env_path = os.path.join(os.path.dirname(__file__), ".env")
@@ -248,12 +249,13 @@ def copilot_chat(request: ChatRequest):
     
     Instructions:
     - Answer the user's questions confidently and professionally as a senior security analyst.
+    - If the user asks about real-world cyber news, today's threat updates, zero-day vulnerabilities, or external cybersecurity events, use your Google Search tool to search for and deliver current real-time news and alerts.
     - IMPORTANT FORMATTING RULE: NEVER output a giant wall of text. Always break your answers into short bullet points.
     - DO NOT use markdown hash symbols (#, ##, ###, ####) for headings. If you need a heading, just use **Bold Text**.
     - Use clear lists. 
     - Keep sentences short, concise, and highly readable.
     - Emphasize critical keywords using **bold** text.
-    - Keep your overall response under 150 words unless specifically asked for a detailed report.
+    - Keep your overall response under 200 words unless specifically asked for a detailed report.
     """
 
     client = genai.Client(api_key=api_key)
@@ -271,10 +273,11 @@ def copilot_chat(request: ChatRequest):
         response = client.models.generate_content(
             model='gemini-2.5-flash',
             contents=contents + [{"role": "user", "parts": [{"text": last_user_message}]}],
-            config={
-                "system_instruction": system_prompt,
-                "temperature": 0.2
-            }
+            config=types.GenerateContentConfig(
+                system_instruction=system_prompt,
+                temperature=0.2,
+                tools=[types.Tool(google_search=types.GoogleSearch())]
+            )
         )
         return {"reply": response.text}
     except Exception as e:
