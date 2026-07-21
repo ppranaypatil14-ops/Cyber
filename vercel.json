@@ -1,51 +1,50 @@
 {
-  "$schema": "https://openapi.vercel.sh/vercel.json",
-  "services": {
-    "frontend": {
-      "root": ".",
-      "framework": "vite"
+  "version": 2,
+  "builds": [
+    {
+      "src": "package.json",
+      "use": "@vercel/static-build",
+      "config": {
+        "distDir": "dist"
+      }
     },
-    "backend": {
-      "root": "backend/",
-      "framework": "fastapi",
-      "entrypoint": "app/main.py"
+    {
+      "src": "backend/app/vercel.py",
+      "use": "@vercel/python"
     }
-  },
-  "rewrites": [
+  ],
+  "routes": [
     {
-      "source": "/api/:path*",
-      "destination": {
-        "service": "backend",
-        "path": "/api/:path*"
-      }
+      "src": "/backend/(.*)",
+      "dest": "backend/app/vercel.py"
     },
     {
-      "source": "/incidents",
-      "destination": {
-        "service": "backend",
-        "path": "/incidents"
-      }
+      "src": "/backend",
+      "dest": "backend/app/vercel.py"
     },
     {
-      "source": "/events",
-      "destination": {
-        "service": "backend",
-        "path": "/events"
-      }
+      "src": "/api/(.*)",
+      "dest": "backend/app/vercel.py"
     },
     {
-      "source": "/health",
-      "destination": {
-        "service": "backend",
-        "path": "/health"
-      }
+      "src": "/incidents",
+      "dest": "backend/app/vercel.py"
     },
     {
-      "source": "/:path*",
-      "destination": {
-        "service": "frontend",
-        "path": "/:path*"
-      }
+      "src": "/events",
+      "dest": "backend/app/vercel.py"
+    },
+    {
+      "src": "/health",
+      "dest": "backend/app/vercel.py"
+    },
+    {
+      "src": "/assets/(.*)",
+      "dest": "/assets/$1"
+    },
+    {
+      "src": "/(.*)",
+      "dest": "/index.html"
     }
   ]
 }
