@@ -243,7 +243,7 @@ Experience Raksha's core capabilities end-to-end in 6 steps:
 
 ---
 
-## 🏆 Innovation & Hackathon Achievements
+## 🏆 Key Highlights
 * **Zero Cold-Starts**: Automated fallback heuristics ensure the app functions smoothly even if the Python ML server is disconnected.
 * **Production-Grade UI**: Built using rich glassmorphism details, emerald-green custom themes, dashboard charts, animated progress gauges, and custom terminal feed interfaces.
 * **Extensible & decoupled**: Separating the heavy ML computation (FastAPI) and the static threat sandbox (Express) matches real-world microservice SOC architectures.
