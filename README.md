@@ -248,4 +248,4 @@ Experience Raksha's core capabilities end-to-end with this 6-step test scenario:
 * **Production-Grade UI**: Built using rich glassmorphism details, emerald-green custom themes, dashboard charts, animated progress gauges, and custom terminal feed interfaces.
 * **Extensible & decoupled**: Separating the heavy ML computation (FastAPI) and the static threat sandbox (Express) matches real-world microservice SOC architectures.
 
-*Designed with ❤️ by the Raksha Project Development Team.*
+*Made with ❤️ for ET-AI hackathon 2.0*
