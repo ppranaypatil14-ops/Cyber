@@ -216,9 +216,9 @@ Cyber-1/
 
 ---
 
-## 🚀 Hackathon Judge Walkthrough Scenario
+## 🚀 Demo Walkthrough
 
-Experience Raksha's core capabilities end-to-end with this 6-step test scenario:
+Experience Raksha's core capabilities end-to-end in 6 steps:
 
 1. **Simulate a Threat in the Lab**:
    * Navigate to the **Security Lab** page.
